@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const sassMiddleware = require('node-sass-middleware');
 const graphqlHTTP = require('express-graphql');
-const {schema} = require('./src/financial-beings/model');
+const {schema} = require('./server/financial-beings/model');
 
 const app = express();
 
@@ -17,7 +17,7 @@ app.use('/graphql', graphqlHTTP({
 }));
 
 // view engine setup
-app.set('views', path.join(__dirname, 'public/views'));
+app.set('views', path.join(__dirname, 'client/views'));
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
