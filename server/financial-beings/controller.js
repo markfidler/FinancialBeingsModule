@@ -14,17 +14,27 @@ const {
 
 const resolvers = {
   Query: {
-    posts: queryPostsResolver,
-    author: queryAuthorResolver
+    async author(parent, arg, ctx, info) {
+      return await queryAuthorResolver(parent, {id: arg.id});
+    },
+    async posts(parent, arg, ctx, info) {
+      return await queryPostsResolver(parent, {postId: arg.id});
+    }
   },
   Mutation: {
-    upvotePost: mutationUpvotePostsResolver
+    async upvotePost(parent, arg, ctx, info) {
+      return await mutationUpvotePostsResolver(parent, {postId: arg.postId});
+    }
   },
   Author: {
-    posts: authorPostsResolver
+    async posts(parent, arg, ctx, info) {
+      return await authorPostsResolver(parent);
+    }
   },
   Post: {
-    author: postsAuthorResolver
+    async author(parent, arg, ctx, info) {
+      return await postsAuthorResolver(parent);
+    }
   }
 };
 

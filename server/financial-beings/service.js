@@ -3,9 +3,9 @@
 const {posts, authors} = require('./model');
 const {find, filter} = require('lodash');
 
-const queryPostsResolver = () => posts;
-const queryAuthorResolver = (_, {id}) => find(authors, {id: id});
-const mutationUpvotePostsResolver = (_, {postId}) => {
+const queryPostsResolver = async () => posts;
+const queryAuthorResolver = async (_, {id}) => find(authors, {id: id});
+const mutationUpvotePostsResolver = async (_, {postId}) => {
   const post = find(posts, {id: postId});
   if (!post) {
     throw new Error(`Couldn't find post with id ${postId}`);
@@ -14,8 +14,8 @@ const mutationUpvotePostsResolver = (_, {postId}) => {
   return post;
 };
 
-const authorPostsResolver = author => filter(posts, {authorId: author.id});
-const postsAuthorResolver = post => find(authors, {id: post.authorId});
+const authorPostsResolver = async author => filter(posts, {authorId: author.id});
+const postsAuthorResolver = async post => find(authors, {id: post.authorId});
 
 module.exports = {
   queryPostsResolver: queryPostsResolver,
