@@ -5,26 +5,26 @@ const {importSchema} = require('graphql-import');
 
 // Import resolver implementations from service
 const {
-  postsQueryResolver,
-  authorQueryResolver,
-  upvotePostsMutationResolver,
-  postsAuthorResolver,
-  authorPostsResolver
+  queryPostsResolver,
+  queryAuthorResolver,
+  mutationUpvotePostsResolver,
+  authorPostsResolver,
+  postsAuthorResolver
 } = require('./service');
 
 const resolvers = {
   Query: {
-    posts: postsQueryResolver,
-    author: authorQueryResolver
+    posts: queryPostsResolver,
+    author: queryAuthorResolver
   },
   Mutation: {
-    upvotePost: upvotePostsMutationResolver
+    upvotePost: mutationUpvotePostsResolver
   },
   Author: {
-    posts: postsAuthorResolver
+    posts: authorPostsResolver
   },
   Post: {
-    author: authorPostsResolver
+    author: postsAuthorResolver
   }
 };
 

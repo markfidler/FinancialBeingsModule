@@ -3,9 +3,9 @@
 const {posts, authors} = require('./model');
 const {find, filter} = require('lodash');
 
-const postsQueryResolver = () => posts;
-const authorQueryResolver = (_, {id}) => find(authors, {id: id});
-const upvotePostsMutationResolver = (_, {postId}) => {
+const queryPostsResolver = () => posts;
+const queryAuthorResolver = (_, {id}) => find(authors, {id: id});
+const mutationUpvotePostsResolver = (_, {postId}) => {
   const post = find(posts, {id: postId});
   if (!post) {
     throw new Error(`Couldn't find post with id ${postId}`);
@@ -14,13 +14,13 @@ const upvotePostsMutationResolver = (_, {postId}) => {
   return post;
 };
 
-const postsAuthorResolver = author => filter(posts, {authorId: author.id});
-const authorPostsResolver = post => find(authors, {id: post.authorId});
+const authorPostsResolver = author => filter(posts, {authorId: author.id});
+const postsAuthorResolver = post => find(authors, {id: post.authorId});
 
 module.exports = {
-  postsQueryResolver: postsQueryResolver,
-  authorQueryResolver: authorQueryResolver,
-  upvotePostsMutationResolver: upvotePostsMutationResolver,
-  postsAuthorResolver: postsAuthorResolver,
-  authorPostsResolver: authorPostsResolver
+  queryPostsResolver: queryPostsResolver,
+  queryAuthorResolver: queryAuthorResolver,
+  mutationUpvotePostsResolver: mutationUpvotePostsResolver,
+  authorPostsResolver: authorPostsResolver,
+  postsAuthorResolver: postsAuthorResolver
 };
