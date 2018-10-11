@@ -13,6 +13,7 @@
     "express": "~4.16.0",
     "express-graphql": "^0.6.12",
     "graphql": "^14.0.2",
+    "graphql-import": "^0.7.1",
     "graphql-tools": "^4.0.0",
     "joi": "^13.7.0",
     "knex": "^0.15.2",

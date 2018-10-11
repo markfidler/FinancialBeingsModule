@@ -4,7 +4,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const graphqlHTTP = require('express-graphql');
-const {schema} = require('./server/financial-beings/model');
+const {schema} = require('./server/financial-beings/controller');
 
 const app = express();
 

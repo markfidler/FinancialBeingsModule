@@ -1,4 +1,13 @@
-type User {
-  id: ID! @unique
-  name: String!
+type Author {
+    id: ID! @unique
+    firstName: String
+    lastName: String
+    posts: [Post!]! # the list of Posts by this author
+}
+
+type Post {
+    id: ID! @unique
+    title: String
+    author: Author
+    votes: Int
 }
