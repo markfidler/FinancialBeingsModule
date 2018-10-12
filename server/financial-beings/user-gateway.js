@@ -113,6 +113,27 @@ async function getUserByAuthId(authId) {
 }
 
 /**
+* Gets single user from Users Module
+* @param {string} token - Authorization Token
+* @return {object} User module information
+* @error {object} Error
+*/
+async function getUserIdByToken(token) {
+  try {
+    const mutation = `
+    mutation {
+      authenticate(idToken: ${token}){
+        authId
+      }
+    }   
+   `;
+    return await client.request(mutation);
+  } catch (err) {
+    throw new Error('Getting user by token failed');
+  }
+}
+
+/**
 * Gets user role from User Module
 * @param {integer} roleId - Role identification number
 * @return {object} User module information
@@ -172,6 +193,7 @@ module.exports = {
   getAllUsers: getAllUsers,
   getUserById: getUserById,
   getUserByAuthId: getUserByAuthId,
+  getUserIdByToken: getUserIdByToken,
   getUserRole: getUserRole,
   getUserDescendents: getUserDescendents
 };
