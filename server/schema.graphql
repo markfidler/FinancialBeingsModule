@@ -1,19 +1,20 @@
-# import Query.TeamConnection, Team from "./db/generated/prisma.graphql"
+# import Query.TeamConnection, Team, FinancialBeings from "./db/generated/prisma.graphql"
 
-#directive @isAuthenticated on QUERY | FIELD | MUTATION
-#directive @hasRole(roles: [String]) on QUERY | FIELD | MUTATION
-#directive @isOwner(type: String) on QUERY | MUTATION
-#directive @isOwnerOrHasRole(type: String, roles: [String]) on QUERY | MUTATION
+directive @isAuthenticated on QUERY | FIELD | MUTATION
+directive @hasRole(roles: [String]) on QUERY | FIELD | MUTATION
+directive @isOwner(type: String) on QUERY | MUTATION
+directive @isOwnerOrHasRole(type: String, roles: [String]) on QUERY | MUTATION
 
 type Query {
-    author(id: Int!): Author
-    posts: [Post]
-    #    teams: TeamConnection
+    teams: [Team]
     #    teamDetails: [Team!]! @isAuthenticated
-    #    teamByName(name: String!): Team
+    teamByName(name: String!): Team
     #    teamById(teamId: String!): Team
     #    teamWithRole(teamId: String!, role: String!): Team
-    #    teamsByOwner(ownerId: String!): [Team!]! @isAuthenticated
+    teamsByOwner(ownerId: String!): [Team!]
+    financialBeings: [FinancialBeing]
+    financialBeingsByName(name: String!): FinancialBeing
+    financialBeingsByID(id: ID!): [FinancialBeing!]!
     #    teamsByRole: [Team!]! @isAuthenticated
     #    owner: Member @isAuthenticated
     #    currentMember: Member @isAuthenticated
@@ -21,8 +22,7 @@ type Query {
 }
 
 type Mutation {
-    upvotePost (postId: Int!): Post
-    #    authenticate(idToken: String!): Member
+    authenticate(idToken: String!): Member
     #    verifyTeamInvite(token: String!): TeamMembers
     #    createTeam(name: String!, slug: String!, botName: String!, botSlug: String!): Team @isAuthenticated
     #    updateTeamProfile(slug: String!, description: String, motto: String, avatar: String, banner: String): Team @isAuthenticated
