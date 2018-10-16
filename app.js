@@ -32,7 +32,7 @@ const db = new Prisma({
   debug: true
 });
 
-app.use('/graphql', graphqlHTTP(req => ({
+app.use('/graphql', checkJwt, graphqlHTTP(req => ({
   schema: schema,
   graphiql: true,
   context: {
