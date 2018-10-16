@@ -13,6 +13,9 @@ const {
 } = require('prisma-binding');
 
 const {resolvers} = require('./server/controller');
+const {
+  checkJwt
+} = require('./server/financial-beings/auth/middleware/jwt');
 
 const app = express();
 
@@ -33,6 +36,11 @@ app.use('/graphql', graphqlHTTP({
   
 }));
 
+app.post('/graphql', checkJwt, (err, req, res, next) => {
+  console.log(req);
+  if (err) return res.status(401).send(`[Authenticate Token Error] ${err.message}`)
+  next();
+});
 
 app.use(logger('dev'));
 app.use(express.json());

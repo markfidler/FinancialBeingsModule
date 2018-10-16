@@ -388,6 +388,8 @@ input FinancialBeingWhereInput {
 
 input FinancialBeingWhereUniqueInput {
   id: ID
+  name: String
+  slug: String
 }
 
 scalar Long

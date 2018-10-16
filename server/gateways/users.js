@@ -19,10 +19,15 @@ async function getAllUsers() {
     query {
       users {
        id
-       referrerId
+       alias
        firstName
+       middleName
        lastName
-       email 
+       bio
+       role {
+         id
+         name
+       }
      }
     }`;
 
@@ -160,6 +165,35 @@ async function getUserRole(roleId) {
 }
 
 /**
+* Searches for user in User Module
+* @param {string} alias - Alias of the user
+* @param {string} firstName - First name of the user
+* @param {string} middleName - Middle name of the user
+* @param {string} lastName - Last name of the user
+* @return {object} User module information
+* @error {object} Error
+*/
+async function getUserBySearchFields(alias, firstName, middleName, lastName) {
+  try {
+    const query = `
+      query {
+        usersSearch(alias: ${alias}, firstName: ${firstName}, middleName: ${middleName}, lastName: ${lastName}) {
+          id
+          alias
+          firstName
+          middleName
+          lastName
+        }
+      }
+   `;
+
+    return await client.request(query);
+  } catch (err) {
+    throw new Error('Searching for users failed');
+  }
+}
+
+/**
 * Gets user decendents from User Module
 * @param {string} userId - User identification number
 * @return {object} User module information
@@ -195,5 +229,6 @@ module.exports = {
   getUserByAuthId: getUserByAuthId,
   getUserIdByToken: getUserIdByToken,
   getUserRole: getUserRole,
+  getUserBySearchFields: getUserBySearchFields,
   getUserDescendents: getUserDescendents
 };
