@@ -1,4 +1,4 @@
-# import Query.TeamConnection, Team, FinancialBeings from "./db/generated/prisma.graphql"
+# import Query.TeamConnection, TeamCreateInput, Team, Query.FinancialBeingConnection, FinancialBeings from "./db/generated/prisma.graphql"
 
 directive @isAuthenticated on QUERY | FIELD | MUTATION
 directive @hasRole(roles: [String]) on QUERY | FIELD | MUTATION
@@ -13,8 +13,11 @@ type Query {
     #    teamWithRole(teamId: String!, role: String!): Team
     teamsByOwner(ownerId: String!): [Team!]
     financialBeings: [FinancialBeing]
-    financialBeingsByName(name: String!): FinancialBeing
-    financialBeingsByID(id: ID!): [FinancialBeing!]!
+    financialBeingsByName(name: String!): [FinancialBeing]
+    financialBeingsByID(id: ID!): [FinancialBeing]
+    financialBeingsByTeamID(teamID: ID!): FinancialBeing
+    financialBeingsByType(type: FBType!): [FinancialBeing]
+    financialBeingsByKind(kind: FBKind!): [FinancialBeing]
     #    teamsByRole: [Team!]! @isAuthenticated
     #    owner: Member @isAuthenticated
     #    currentMember: Member @isAuthenticated
@@ -24,7 +27,9 @@ type Query {
 type Mutation {
     authenticate(idToken: String!): Member
     #    verifyTeamInvite(token: String!): TeamMembers
-    #    createTeam(name: String!, slug: String!, botName: String!, botSlug: String!): Team @isAuthenticated
+    createTeam(name: String!, slug: String!, botName: String!, botSlug: String!): Team
+    createFinancialBeing(name: String!, slug: String!, type: FBType!, kind: FBKind!, team: TeamCreateInput): FinancialBeing
+    #    createFinancialBeing(input: FinancialBeing): FinancialBeing
     #    updateTeamProfile(slug: String!, description: String, motto: String, avatar: String, banner: String): Team @isAuthenticated
     #    updateFB(fbId: String!, avatar: String): FinancialBeings @isAuthenticated
     #    deleteTeam(slug: String!): Team @isAuthenticated @isOwner(type: "Team")
