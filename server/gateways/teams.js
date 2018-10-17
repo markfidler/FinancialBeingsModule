@@ -100,11 +100,16 @@ async function getTeamByName(teamName) {
 * Get team by name from Team Module
 * NOTE: Needs authorization
 * @param {string} authId - Authorization id of the owner
+* @param {string} token - JWT Token
 * @return {object} Team module information
 * @error {object} Error
 */
-async function getTeamByOwnerId(authId) {
+async function getTeamByOwnerId(authId, token) {
   try {
+    client.options.headers = {
+      Authorization: token
+    };
+
     const query = `
     query {
       teamsByOwner(ownerId: ${authId}) {
@@ -161,8 +166,38 @@ async function getTeamByOwnerId(authId) {
   }
 }
 
+/**
+* Get team by name from Team Module
+* NOTE: Needs authorization
+* @param {string} token - JWT Token
+* @return {object} Team module information
+* @error {object} Error
+*/
+async function getCurrentmember(token) {
+  try {
+    client.options.headers = {
+      Authorization: token
+    };
+
+    const query = `
+      query {
+        currentMember {
+          id
+          alias
+        }
+      }
+    `;
+
+    return await client.request(query);
+  } catch (err) {
+    console.log(err);
+    throw new Error('Getting current member failed');
+  }
+}
+
 module.exports = {
   getAllTeams: getAllTeams,
   getTeamByName: getTeamByName,
-  getTeamByOwnerId: getTeamByOwnerId
+  getTeamByOwnerId: getTeamByOwnerId,
+  getCurrentmember: getCurrentmember
 };

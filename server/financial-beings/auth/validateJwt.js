@@ -26,6 +26,7 @@ async function validateIdToken(token) {
     if (!header || !header.kid || !payload) {
       throw new Error('Invalid Token');
     }
+    
     const key = await jwksSigingKey(header.kid);
 
     return await jwt.verify(clearToken, key.publicKey, {algorithms: ['RS256']});
