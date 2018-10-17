@@ -17,6 +17,10 @@ const {
   checkJwt
 } = require('./server/auth/middleware/jwt');
 
+const {
+  validateJWT
+} = require('./server/auth/validateJWT');
+
 const app = express();
 
 app.use(logger('dev'));
@@ -32,12 +36,13 @@ const db = new Prisma({
   debug: true
 });
 
-app.use('/graphql', checkJwt, graphqlHTTP(req => ({
+app.use('/graphql', checkJwt, graphqlHTTP(async req => ({
   schema: schema,
   graphiql: true,
   context: {
     db: db,
-    req: req
+    req: req,
+    jwt: await validateJWT(req.cookies['Authorization'])
   }
 })));
 

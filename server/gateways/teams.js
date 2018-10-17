@@ -1,18 +1,19 @@
 'use strict';
 
 const graphql = require('graphql-request');
+const {GraphQLError} = require('graphql');
+const {logger} = require('../utils');
 
-const AATeamsModule = process.env.AA_TEAMS_MODULE;
 
-const client = new graphql.GraphQLClient(AATeamsModule, {
+const client = new graphql.GraphQLClient(process.env.AA_TEAMS_MODULE, {
   headers: {}
 });
 
 /**
-* Get all teams from Teams Module
-* @return {object} Team module information
-* @error {object} Error
-*/
+ * Get all teams from Teams Module
+ * @return {object} Team module information
+ * @error {object} Error
+ */
 async function getAllTeams() {
   try {
     const query = `
@@ -67,7 +68,7 @@ async function getAllTeams() {
         }
       }
     }`;
-
+    
     return await client.request(query);
   } catch (err) {
     throw new Error('Getting all teams failed');
@@ -75,11 +76,11 @@ async function getAllTeams() {
 }
 
 /**
-* Get team by name from Team Module
-* @param {string} teamName - Name of the team
-* @return {object} Team module information
-* @error {object} Error
-*/
+ * Get team by name from Team Module
+ * @param {string} teamName - Name of the team
+ * @return {object} Team module information
+ * @error {object} Error
+ */
 async function getTeamByName(teamName) {
   try {
     const query = `
@@ -89,7 +90,7 @@ async function getTeamByName(teamName) {
       }
     }
     `;
-
+    
     return await client.request(query);
   } catch (err) {
     throw new Error('');
@@ -97,22 +98,22 @@ async function getTeamByName(teamName) {
 }
 
 /**
-* Get team by name from Team Module
-* NOTE: Needs authorization
-* @param {string} authId - Authorization id of the owner
-* @param {string} token - JWT Token
-* @return {object} Team module information
-* @error {object} Error
-*/
+ * Get team by name from Team Module
+ * NOTE: Needs authorization
+ * @param {string} authId - Authorization id of the owner
+ * @param {string} token - JWT Token
+ * @return {object} Team module information
+ * @error {object} Error
+ */
 async function getTeamByOwnerId(authId, token) {
   try {
     client.options.headers = {
       Authorization: token
     };
-
+    
     const query = `
     query {
-      teamsByOwner(ownerId: ${authId}) {
+      teamsByOwner(ownerId: "5bc0a79b60fed123b9fdcbaa") {
         id
         name
         slug
@@ -162,23 +163,23 @@ async function getTeamByOwnerId(authId, token) {
     
     return await client.request(query);
   } catch (err) {
-    throw new Error('Getting team by owner id failed');
+    throw new GraphQLError('Getting team by owner id failed');
   }
 }
 
 /**
-* Get team by name from Team Module
-* NOTE: Needs authorization
-* @param {string} token - JWT Token
-* @return {object} Team module information
-* @error {object} Error
-*/
-async function getCurrentmember(token) {
+ * Get team by name from Team Module
+ * NOTE: Needs authorization
+ * @param {string} token - JWT Token
+ * @return {object} Team module information
+ * @error {object} Error
+ */
+async function getCurrentMember(token) {
   try {
     client.options.headers = {
       Authorization: token
     };
-
+    
     const query = `
       query {
         currentMember {
@@ -187,7 +188,7 @@ async function getCurrentmember(token) {
         }
       }
     `;
-
+    
     return await client.request(query);
   } catch (err) {
     console.log(err);
@@ -195,9 +196,40 @@ async function getCurrentmember(token) {
   }
 }
 
+async function getTeamByID(teamId, token) {
+  try {
+    client.options.headers = {
+      Authorization: token
+    };
+    
+    const query = `
+    query {
+      teamById(teamId: "${teamId}") {
+        id
+      }
+    }
+    `;
+    
+    const data = await client.request(query);
+    return data;
+  } catch (e) {
+    throw new GraphQLError('Error occurred while getting Team');
+  }
+}
+
+async function createTeam() {
+  try {
+  
+  } catch (e) {
+    logger.error(`Error Occurred: ${e.message} | On: ${new Date().toISOString()}`);
+    throw new GraphQLError(e.message);
+  }
+}
+
 module.exports = {
   getAllTeams: getAllTeams,
   getTeamByName: getTeamByName,
   getTeamByOwnerId: getTeamByOwnerId,
-  getCurrentmember: getCurrentmember
+  getCurrentMember: getCurrentMember,
+  getTeamByID: getTeamByID
 };

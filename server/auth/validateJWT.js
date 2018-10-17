@@ -14,12 +14,12 @@ const jwks = jwksClient({
 const jwksSigingKey = util.promisify(jwks.getSigningKey).bind(jwks);
 
 /**
-* Verify users JWT
-* @param {string} token - JWT Token
-* @return {object} Jwt object
-* @error {object} Error
-*/
-async function validateIdToken(token) {
+ * Verify users JWT
+ * @param {string} token - JWT Token
+ * @return {object} Jwt object
+ * @error {object} Error
+ */
+async function validateJWT(token) {
   try {
     const clearToken = token.split(' ')[1];
     const {header, payload} = jwt.decode(clearToken, {complete: true});
@@ -28,13 +28,14 @@ async function validateIdToken(token) {
     }
     
     const key = await jwksSigingKey(header.kid);
-
-    return await jwt.verify(clearToken, key.publicKey, {algorithms: ['RS256']});
+    
+    const data = await jwt.verify(clearToken, key.publicKey, {algorithms: ['RS256']});
+    return data;
   } catch (err) {
     throw new Error('Validating token failed');
   }
 }
 
 module.exports = {
-  validateIdToken: validateIdToken
+  validateJWT: validateJWT
 };

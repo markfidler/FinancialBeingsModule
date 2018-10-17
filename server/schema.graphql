@@ -28,7 +28,7 @@ type Mutation {
     authenticate(idToken: String!): Member
     #    verifyTeamInvite(token: String!): TeamMembers
     createTeam(name: String!, slug: String!, botName: String!, botSlug: String!): Team
-    createFinancialBeing(name: String!, slug: String!, type: FBType!, kind: FBKind!, team: TeamCreateInput): FinancialBeing
+    createFinancialBeing(name: String!, slug: String!, type: FBType!, kind: FBKind!, parentID: String!, teamID: String!): FinancialBeing
     #    createFinancialBeing(input: FinancialBeing): FinancialBeing
     #    updateTeamProfile(slug: String!, description: String, motto: String, avatar: String, banner: String): Team @isAuthenticated
     #    updateFB(fbId: String!, avatar: String): FinancialBeings @isAuthenticated
