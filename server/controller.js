@@ -4,6 +4,7 @@ require('dotenv').config();
 const {makeExecutableSchema} = require('graphql-tools');
 const {importSchema} = require('graphql-import');
 const {GraphQLError} = require('graphql');
+const _ = require('lodash');
 
 const {logger} = require('./utils');
 
@@ -20,7 +21,17 @@ const BEINGS_FRAGMENT = require('./db/graphql/BeingsFragment');
 const resolvers = {
   Query: {
     async teams(parent, args, ctx, info) {
-      return await ctx.db.query.teams({}, TEAMS_FRAGMENT, ctx);
+      try {
+        
+        return await ctx.db.query.teams({}, TEAMS_FRAGMENT, ctx);
+      } catch (e) {
+        if (e.__proto__.name !== 'GraphQLError') {
+          logger.log({level: 'error', message: e.message});
+          throw new GraphQLError('Something went wrong while getting Financial Beings');
+        }
+        
+        throw e;
+      }
     },
     /**
      * Query function - get all financial beings
@@ -33,7 +44,18 @@ const resolvers = {
      * @return {Object} GraphQL Query response - BEINGS_FRAGMENT is the template
      */
     async financialBeings(parent, args, ctx, info) {
-      return await ctx.db.query.financialBeings({}, BEINGS_FRAGMENT);
+      try {
+        
+        return await ctx.db.query.financialBeings({}, BEINGS_FRAGMENT);
+      } catch (e) {
+        if (e.__proto__.name !== 'GraphQLError') {
+          logger.log({level: 'error', message: e.message});
+          
+          throw new GraphQLError('Something went wrong while getting Financial Beings');
+        }
+        
+        throw e;
+      }
     },
     /**
      * Query function - get financial being by name
@@ -46,7 +68,18 @@ const resolvers = {
      * @return {Object} GraphQL Query response - BEINGS_FRAGMENT is the template
      */
     async financialBeingsByName(parent, {name}, ctx, info) {
-      return await ctx.db.query.financialBeings({where: {name: name}}, BEINGS_FRAGMENT);
+      try {
+        
+        return await ctx.db.query.financialBeings({where: {name: name}}, BEINGS_FRAGMENT);
+      } catch (e) {
+        if (e.__proto__.name !== 'GraphQLError') {
+          logger.log({level: 'error', message: e.message});
+          
+          throw new GraphQLError('Something went wrong while getting Financial Beings');
+        }
+        
+        throw e;
+      }
     },
     /**
      * Query function - get financial beings by ID
@@ -59,7 +92,18 @@ const resolvers = {
      * @return {Object} GraphQL Query response - BEINGS_FRAGMENT is the template
      */
     async financialBeingsByID(parent, {id}, ctx, info) {
-      return await ctx.db.query.financialBeings({where: {id: id}}, BEINGS_FRAGMENT);
+      try {
+        
+        return await ctx.db.query.financialBeings({where: {id: id}}, BEINGS_FRAGMENT);
+      } catch (e) {
+        if (e.__proto__.name !== 'GraphQLError') {
+          logger.log({level: 'error', message: e.message});
+          
+          throw new GraphQLError('Something went wrong while getting Financial Beings');
+        }
+        
+        throw e;
+      }
     },
     // async financialBeingsByTeamID(parent, {team}, ctx, info) {
     //   let data =  await ctx.db.query.financialBeings({where: {team: team}}, BEINGS_FRAGMENT);
@@ -76,7 +120,18 @@ const resolvers = {
      * @return {Object} GraphQL Query response - BEINGS_FRAGMENT is the template
      */
     async financialBeingsByType(parent, {type}, ctx, info) {
-      return await ctx.db.query.financialBeings({where: {type: type}}, BEINGS_FRAGMENT);
+      try {
+        
+        return await ctx.db.query.financialBeings({where: {type: type}}, BEINGS_FRAGMENT);
+      } catch (e) {
+        if (e.__proto__.name !== 'GraphQLError') {
+          logger.log({level: 'error', message: e.message});
+          
+          throw new GraphQLError('Something went wrong while getting Financial Beings');
+        }
+        
+        throw e;
+      }
     },
     /**
      * Query function - get financial being by kind
@@ -89,31 +144,48 @@ const resolvers = {
      * @return {Object} GraphQL Query response - BEINGS_FRAGMENT is the template
      */
     async financialBeingsByKind(parent, {kind}, ctx, info) {
-      return await ctx.db.query.financialBeings({where: {kind: kind}}, BEINGS_FRAGMENT);
+      try {
+        
+        return await ctx.db.query.financialBeings({where: {kind: kind}}, BEINGS_FRAGMENT);
+      } catch (e) {
+        if (e.__proto__.name !== 'GraphQLError') {
+          logger.log({level: 'error', message: e.message});
+          
+          throw new GraphQLError('Something went wrong while getting Financial Beings');
+        }
+        
+        throw e;
+      }
     }
   },
   Mutation: {
     async createFinancialBeing(parent, args, ctx, info) {
       
       try {
-        const parentFinancialBeing = await resolvers.Query.financialBeingsByID(parent, {id: args.parentID}, ctx, info);
-        
-        if (parentFinancialBeing.length < 1) {
-          throw new GraphQLError('Invalid Financial Being parent');
-        }
-        
+        // We can extract the caller ID from JWT
         const caller = ctx.jwt.sub.split('|')[1];
         
         // TODO@Urk: we are creating a mechanism to extract data from token
         // That means we need to verify the JWT, since we can't just add FB
         // without properly checking the user first (and its access rights)
         // For now, we'll just use the data from which we received from JWT
-        const teamFinancialBeing = await getTeamByOwnerId(caller, ctx.req.cookies['Authorization']);
+        let teamFinancialBeing = await getTeamByOwnerId(caller, ctx.req.cookies['Authorization']);
+        
+        teamFinancialBeing = _.filter(teamFinancialBeing.teamsByOwner, e => {
+          return e.owner === caller;
+        });
         
         if (teamFinancialBeing.length < 1) {
-          throw new GraphQLError('Team doesn\'t exist! Please, create team first.');
+          logger.log({level: 'error', message: 'Provided team doesn\'t exist!'});
+          throw new GraphQLError('Provided team doesn\'t exist!');
         }
         
+        const parentFinancialBeing = await resolvers.Query.financialBeingsByID(parent, {id: args.parentID}, ctx, info);
+        
+        if (parentFinancialBeing.length < 1) {
+          logger.log({level: 'error', message: 'Invalid Financial Being parent'});
+          throw new GraphQLError('Invalid Financial Being parent');
+        }
         
         return await ctx.db.mutation.createFinancialBeing({
           data: {
@@ -124,33 +196,25 @@ const resolvers = {
             owner: caller,
             team: {
               connect: {
-                id: teamFinancialBeing[0].id
+                id: teamFinancialBeing.id
               }
             },
             parent: {
               connect: {
-                id: parentFinancialBeing[0].id
+                id: parentFinancialBeing.id
               }
             }
           }
         }, BEINGS_FRAGMENT);
       } catch (e) {
-        logger.error(e.message);
-        throw new GraphQLError('Something went wrong while creating financial being!');
+        if (e.__proto__.name !== 'GraphQLError') {
+          logger.log({level: 'error', message: e.message});
+          throw new GraphQLError('Something went wrong while creating financial being!');
+        }
+        
+        throw e;
       }
     }
-    
-    
-    // Author: {
-    //   async posts(parent, arg, ctx, info) {
-    //     return await authorPostsResolver(parent);
-    //   }
-    // },
-    // Post: {
-    //   async author(parent, arg, ctx, info) {
-    //     return await postsAuthorResolver(parent);
-    //   }
-    // }
   }
 };
 

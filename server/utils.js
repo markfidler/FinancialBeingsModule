@@ -6,7 +6,10 @@ const tsFormat = () => new Date().toISOString();
 
 const logger = winston.createLogger({
   level: 'info',
-  format: winston.format.simple(),
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
   transports: [
     //
     // - Write to all logs with level `info` and below to `combined.log`

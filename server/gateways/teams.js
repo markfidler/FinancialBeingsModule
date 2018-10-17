@@ -100,12 +100,12 @@ async function getTeamByName(teamName) {
 /**
  * Get team by name from Team Module
  * NOTE: Needs authorization
- * @param {string} authId - Authorization id of the owner
+ * @param {string} ownerId - Authorization id of the owner
  * @param {string} token - JWT Token
  * @return {object} Team module information
  * @error {object} Error
  */
-async function getTeamByOwnerId(authId, token) {
+async function getTeamByOwnerId(ownerId, token) {
   try {
     client.options.headers = {
       Authorization: token
@@ -113,7 +113,7 @@ async function getTeamByOwnerId(authId, token) {
     
     const query = `
     query {
-      teamsByOwner(ownerId: "5bc0a79b60fed123b9fdcbaa") {
+      teamsByOwner(ownerId: "${ownerId}") {
         id
         name
         slug
