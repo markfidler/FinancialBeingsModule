@@ -15,9 +15,14 @@ const {
 const {resolvers} = require('./server/controller');
 const {
   checkJwt
-} = require('./server/financial-beings/auth/middleware/jwt');
+} = require('./server/auth/middleware/jwt');
 
 const app = express();
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
+app.use(cookieParser());
 
 const db = new Prisma({
   fragmentReplacements: extractFragmentReplacements(resolvers),
@@ -27,30 +32,17 @@ const db = new Prisma({
   debug: true
 });
 
-app.use('/graphql', graphqlHTTP({
+app.use('/graphql', checkJwt, graphqlHTTP(req => ({
   schema: schema,
   graphiql: true,
   context: {
-    db: db
+    db: db,
+    req: req
   }
-  
-}));
-
-app.post('/graphql', checkJwt, (err, req, res, next) => {
-  console.log(req);
-  if (err) return res.status(401).send(`[Authenticate Token Error] ${err.message}`)
-  next();
-});
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({extended: false}));
-app.use(cookieParser());
-
+})));
 
 app.use(
   function(err, request, res, next) {
-    // console.log('checkJwt: ', err, req)
     if (err) {
       return res.status(201).send(err.message);
     } else {

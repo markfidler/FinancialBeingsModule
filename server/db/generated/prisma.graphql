@@ -172,6 +172,7 @@ type FinancialBeing {
   status(where: FBStatusWhereInput, orderBy: FBStatusOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [FBStatus!]
   updatedAt: DateTime!
   createdAt: DateTime!
+  parent: FinancialBeing
 }
 
 type FinancialBeingConnection {
@@ -188,11 +189,17 @@ input FinancialBeingCreateInput {
   avatar: String
   team: TeamCreateOneWithoutFbInput
   status: FBStatusCreateManyInput
+  parent: FinancialBeingCreateOneInput
 }
 
 input FinancialBeingCreateManyWithoutTeamInput {
   create: [FinancialBeingCreateWithoutTeamInput!]
   connect: [FinancialBeingWhereUniqueInput!]
+}
+
+input FinancialBeingCreateOneInput {
+  create: FinancialBeingCreateInput
+  connect: FinancialBeingWhereUniqueInput
 }
 
 input FinancialBeingCreateWithoutTeamInput {
@@ -202,6 +209,7 @@ input FinancialBeingCreateWithoutTeamInput {
   slug: String!
   avatar: String
   status: FBStatusCreateManyInput
+  parent: FinancialBeingCreateOneInput
 }
 
 type FinancialBeingEdge {
@@ -257,6 +265,17 @@ input FinancialBeingSubscriptionWhereInput {
   NOT: [FinancialBeingSubscriptionWhereInput!]
 }
 
+input FinancialBeingUpdateDataInput {
+  type: FBType
+  kind: FBKind
+  name: String
+  slug: String
+  avatar: String
+  team: TeamUpdateOneWithoutFbInput
+  status: FBStatusUpdateManyInput
+  parent: FinancialBeingUpdateOneInput
+}
+
 input FinancialBeingUpdateInput {
   type: FBType
   kind: FBKind
@@ -265,6 +284,7 @@ input FinancialBeingUpdateInput {
   avatar: String
   team: TeamUpdateOneWithoutFbInput
   status: FBStatusUpdateManyInput
+  parent: FinancialBeingUpdateOneInput
 }
 
 input FinancialBeingUpdateManyWithoutTeamInput {
@@ -276,6 +296,15 @@ input FinancialBeingUpdateManyWithoutTeamInput {
   upsert: [FinancialBeingUpsertWithWhereUniqueWithoutTeamInput!]
 }
 
+input FinancialBeingUpdateOneInput {
+  create: FinancialBeingCreateInput
+  update: FinancialBeingUpdateDataInput
+  upsert: FinancialBeingUpsertNestedInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: FinancialBeingWhereUniqueInput
+}
+
 input FinancialBeingUpdateWithoutTeamDataInput {
   type: FBType
   kind: FBKind
@@ -283,11 +312,17 @@ input FinancialBeingUpdateWithoutTeamDataInput {
   slug: String
   avatar: String
   status: FBStatusUpdateManyInput
+  parent: FinancialBeingUpdateOneInput
 }
 
 input FinancialBeingUpdateWithWhereUniqueWithoutTeamInput {
   where: FinancialBeingWhereUniqueInput!
   data: FinancialBeingUpdateWithoutTeamDataInput!
+}
+
+input FinancialBeingUpsertNestedInput {
+  update: FinancialBeingUpdateDataInput!
+  create: FinancialBeingCreateInput!
 }
 
 input FinancialBeingUpsertWithWhereUniqueWithoutTeamInput {
@@ -381,6 +416,7 @@ input FinancialBeingWhereInput {
   createdAt_lte: DateTime
   createdAt_gt: DateTime
   createdAt_gte: DateTime
+  parent: FinancialBeingWhereInput
   AND: [FinancialBeingWhereInput!]
   OR: [FinancialBeingWhereInput!]
   NOT: [FinancialBeingWhereInput!]

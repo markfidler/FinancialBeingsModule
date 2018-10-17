@@ -103,6 +103,7 @@ type FinancialBeing {
     status: [FBStatus!]!
     updatedAt: DateTime!
     createdAt: DateTime!
+    parent: FinancialBeing
 }
 
 type FBStatus {
