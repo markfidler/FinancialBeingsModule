@@ -2,7 +2,6 @@
 
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const logger = require('morgan');
 const graphqlHTTP = require('express-graphql');
 const {schema} = require('./server/controller');
 
@@ -23,7 +22,6 @@ const {
 
 const app = express();
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
@@ -36,7 +34,7 @@ const db = new Prisma({
   debug: true
 });
 
-app.use('/graphql', checkJwt, graphqlHTTP(async req => ({
+app.use('/graphql', graphqlHTTP(async req => ({
   schema: schema,
   graphiql: true,
   context: {

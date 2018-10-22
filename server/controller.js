@@ -1,38 +1,18 @@
 'use strict';
 require('dotenv').config();
 
-const {makeExecutableSchema} = require('graphql-tools');
-const {importSchema} = require('graphql-import');
-const {GraphQLError} = require('graphql');
 const _ = require('lodash');
+const {GraphQLError} = require('graphql');
+const {importSchema} = require('graphql-import');
+const {makeExecutableSchema} = require('graphql-tools');
 
 const {logger} = require('./utils');
+const {getTeamByOwnerId} = require('./gateways/teams');
 
-const {
-  getTeamByID,
-  getTeamByOwnerId
-} = require('./gateways/teams');
-
-const TEAMS_CONNECTIONS_FRAGMENT = require('./db/graphql/TeamsConnectionsFragment');
-const BEINGS_CONNECTIONS_FRAGMENT = require('./db/graphql/BeingsConnectionsFragment');
-const TEAMS_FRAGMENT = require('./db/graphql/TeamsFragment');
 const BEINGS_FRAGMENT = require('./db/graphql/BeingsFragment');
 
 const resolvers = {
   Query: {
-    async teams(parent, args, ctx, info) {
-      try {
-        
-        return await ctx.db.query.teams({}, TEAMS_FRAGMENT, ctx);
-      } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
-          logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while getting Financial Beings');
-        }
-        
-        throw e;
-      }
-    },
     /**
      * Query function - get all financial beings
      * @param {Object} parent - The result of the previous resolver call.
@@ -159,8 +139,23 @@ const resolvers = {
     }
   },
   Mutation: {
+    /**
+     * Mutation function - try to create financial being
+     * @param {Object} parent - The result of the previous resolver fn execution
+     * @param {Object} args - Object with all data needed for function execution
+     * @param {String!} args.name: Name of the financial being we want to create
+     * @param {String!} args.slug: Slug of the financial being we want to create
+     * @param {Enumerator!} args.type: Financial being type (see ./db/datamodel)
+     * @param {Enumerator!} args.kind: Financial being kind (see ./db/datamodel)
+     * @param {String!} args.parentID: ID of the parent financial being (forked)
+     * @param {String!} args.teamID: ID of owning team (financial being creator)
+     * @param {Object} ctx - context
+     * @param {Object} ctx.db - db object on provided context with closure functions to talk with Prisma DB interface
+     * @param {Object} ctx.req - HTTP request object
+     * @param {Object} info - query AST and more execution information
+     * @return {Object} GraphQL Query response - BEINGS_FRAGMENT is the template
+     */
     async createFinancialBeing(parent, args, ctx, info) {
-      
       try {
         // We can extract the caller ID from JWT
         const caller = ctx.jwt.sub.split('|')[1];
@@ -176,14 +171,14 @@ const resolvers = {
         });
         
         if (teamFinancialBeing.length < 1) {
-          logger.log({level: 'error', message: 'Provided team doesn\'t exist!'});
+          logger.log({level: 'warn', message: 'Provided team doesn\'t exist!'});
           throw new GraphQLError('Provided team doesn\'t exist!');
         }
         
         const parentFinancialBeing = await resolvers.Query.financialBeingsByID(parent, {id: args.parentID}, ctx, info);
         
         if (parentFinancialBeing.length < 1) {
-          logger.log({level: 'error', message: 'Invalid Financial Being parent'});
+          logger.log({level: 'warn', message: 'Invalid Financial Being parent'});
           throw new GraphQLError('Invalid Financial Being parent');
         }
         
