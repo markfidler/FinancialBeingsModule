@@ -36,18 +36,21 @@ query {
 ### Database
 Now, we need to initialize database
 
-You need knex installed globally and PostgreSQL database created (the same in `.env DB_DATABASE=`)
+You need also docker for database (PostgreSQL and Prisma).
 
-After you set that up, then:
+So you can do from the root folder:
 ```
-// You can run migration
-$ knex migrate:latest
+$ docker-compose up -d
 
-// ...and seeds if necessary
-$ knex seed:run
+// and then you need to install prisma globally 
 
-// If you need to downgrade, do: 
-$ knex migrate rollback
+$ sudo npm install -g prisma
+
+// after that, generate and deploy on localhost:4466 via Docker
+
+$ prisma generate
+$ prisma deploy 
+
 ```
 
 ## .env Example
@@ -61,7 +64,13 @@ Quick reference - if you need to require dotenv, you can use `-r dotenv/config`
 # DATABASE
 DB_HOST=
 DB_USER=
-DB_PASS=
+DB_PASS=root
 DB_DATABASE=
 DB_PORT=
+
+AA_USER_MODULE=https://users-api.advancedalgos.net/graphql
+AA_TEAMS_MODULE=https://teams-api.advancedalgos.net/graphql
+
+PRISMA_ENDPOINT=
+PRISMA_SECRET=
 ```

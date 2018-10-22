@@ -1,0 +1,1838 @@
+type AggregateFBStatus {
+  count: Int!
+}
+
+type AggregateFinancialBeing {
+  count: Int!
+}
+
+type AggregateMember {
+  count: Int!
+}
+
+type AggregateMemberStatus {
+  count: Int!
+}
+
+type AggregateTeam {
+  count: Int!
+}
+
+type AggregateTeamMembers {
+  count: Int!
+}
+
+type AggregateTeamMemberStatus {
+  count: Int!
+}
+
+type AggregateTeamProfile {
+  count: Int!
+}
+
+type AggregateTeamStatus {
+  count: Int!
+}
+
+type AggregateWallet {
+  count: Int!
+}
+
+type BatchPayload {
+  count: Long!
+}
+
+scalar DateTime
+
+enum FBKind {
+  TRADER
+  INDICATOR
+  EXTRACTOR
+  PLOTTER
+}
+
+type FBStatus {
+  status: Status
+  reason: String
+  createdAt: DateTime!
+}
+
+type FBStatusConnection {
+  pageInfo: PageInfo!
+  edges: [FBStatusEdge]!
+  aggregate: AggregateFBStatus!
+}
+
+input FBStatusCreateInput {
+  status: Status
+  reason: String
+}
+
+input FBStatusCreateManyInput {
+  create: [FBStatusCreateInput!]
+}
+
+type FBStatusEdge {
+  node: FBStatus!
+  cursor: String!
+}
+
+enum FBStatusOrderByInput {
+  status_ASC
+  status_DESC
+  reason_ASC
+  reason_DESC
+  createdAt_ASC
+  createdAt_DESC
+  id_ASC
+  id_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type FBStatusPreviousValues {
+  status: Status
+  reason: String
+  createdAt: DateTime!
+}
+
+type FBStatusSubscriptionPayload {
+  mutation: MutationType!
+  node: FBStatus
+  updatedFields: [String!]
+  previousValues: FBStatusPreviousValues
+}
+
+input FBStatusSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: FBStatusWhereInput
+  AND: [FBStatusSubscriptionWhereInput!]
+  OR: [FBStatusSubscriptionWhereInput!]
+  NOT: [FBStatusSubscriptionWhereInput!]
+}
+
+input FBStatusUpdateInput {
+  status: Status
+  reason: String
+}
+
+input FBStatusUpdateManyInput {
+  create: [FBStatusCreateInput!]
+}
+
+input FBStatusWhereInput {
+  status: Status
+  status_not: Status
+  status_in: [Status!]
+  status_not_in: [Status!]
+  reason: String
+  reason_not: String
+  reason_in: [String!]
+  reason_not_in: [String!]
+  reason_lt: String
+  reason_lte: String
+  reason_gt: String
+  reason_gte: String
+  reason_contains: String
+  reason_not_contains: String
+  reason_starts_with: String
+  reason_not_starts_with: String
+  reason_ends_with: String
+  reason_not_ends_with: String
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  AND: [FBStatusWhereInput!]
+  OR: [FBStatusWhereInput!]
+  NOT: [FBStatusWhereInput!]
+}
+
+enum FBType {
+  BOT
+  NET
+  ADVANCED
+}
+
+type FinancialBeing {
+  id: ID!
+  type: FBType
+  kind: FBKind
+  name: String!
+  slug: String!
+  avatar: String
+  team: Team
+  status(where: FBStatusWhereInput, orderBy: FBStatusOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [FBStatus!]
+  updatedAt: DateTime!
+  createdAt: DateTime!
+  parent: FinancialBeing
+}
+
+type FinancialBeingConnection {
+  pageInfo: PageInfo!
+  edges: [FinancialBeingEdge]!
+  aggregate: AggregateFinancialBeing!
+}
+
+input FinancialBeingCreateInput {
+  type: FBType
+  kind: FBKind
+  name: String!
+  slug: String!
+  avatar: String
+  team: TeamCreateOneWithoutFbInput
+  status: FBStatusCreateManyInput
+  parent: FinancialBeingCreateOneInput
+}
+
+input FinancialBeingCreateManyWithoutTeamInput {
+  create: [FinancialBeingCreateWithoutTeamInput!]
+  connect: [FinancialBeingWhereUniqueInput!]
+}
+
+input FinancialBeingCreateOneInput {
+  create: FinancialBeingCreateInput
+  connect: FinancialBeingWhereUniqueInput
+}
+
+input FinancialBeingCreateWithoutTeamInput {
+  type: FBType
+  kind: FBKind
+  name: String!
+  slug: String!
+  avatar: String
+  status: FBStatusCreateManyInput
+  parent: FinancialBeingCreateOneInput
+}
+
+type FinancialBeingEdge {
+  node: FinancialBeing!
+  cursor: String!
+}
+
+enum FinancialBeingOrderByInput {
+  id_ASC
+  id_DESC
+  type_ASC
+  type_DESC
+  kind_ASC
+  kind_DESC
+  name_ASC
+  name_DESC
+  slug_ASC
+  slug_DESC
+  avatar_ASC
+  avatar_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type FinancialBeingPreviousValues {
+  id: ID!
+  type: FBType
+  kind: FBKind
+  name: String!
+  slug: String!
+  avatar: String
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type FinancialBeingSubscriptionPayload {
+  mutation: MutationType!
+  node: FinancialBeing
+  updatedFields: [String!]
+  previousValues: FinancialBeingPreviousValues
+}
+
+input FinancialBeingSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: FinancialBeingWhereInput
+  AND: [FinancialBeingSubscriptionWhereInput!]
+  OR: [FinancialBeingSubscriptionWhereInput!]
+  NOT: [FinancialBeingSubscriptionWhereInput!]
+}
+
+input FinancialBeingUpdateDataInput {
+  type: FBType
+  kind: FBKind
+  name: String
+  slug: String
+  avatar: String
+  team: TeamUpdateOneWithoutFbInput
+  status: FBStatusUpdateManyInput
+  parent: FinancialBeingUpdateOneInput
+}
+
+input FinancialBeingUpdateInput {
+  type: FBType
+  kind: FBKind
+  name: String
+  slug: String
+  avatar: String
+  team: TeamUpdateOneWithoutFbInput
+  status: FBStatusUpdateManyInput
+  parent: FinancialBeingUpdateOneInput
+}
+
+input FinancialBeingUpdateManyWithoutTeamInput {
+  create: [FinancialBeingCreateWithoutTeamInput!]
+  delete: [FinancialBeingWhereUniqueInput!]
+  connect: [FinancialBeingWhereUniqueInput!]
+  disconnect: [FinancialBeingWhereUniqueInput!]
+  update: [FinancialBeingUpdateWithWhereUniqueWithoutTeamInput!]
+  upsert: [FinancialBeingUpsertWithWhereUniqueWithoutTeamInput!]
+}
+
+input FinancialBeingUpdateOneInput {
+  create: FinancialBeingCreateInput
+  update: FinancialBeingUpdateDataInput
+  upsert: FinancialBeingUpsertNestedInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: FinancialBeingWhereUniqueInput
+}
+
+input FinancialBeingUpdateWithoutTeamDataInput {
+  type: FBType
+  kind: FBKind
+  name: String
+  slug: String
+  avatar: String
+  status: FBStatusUpdateManyInput
+  parent: FinancialBeingUpdateOneInput
+}
+
+input FinancialBeingUpdateWithWhereUniqueWithoutTeamInput {
+  where: FinancialBeingWhereUniqueInput!
+  data: FinancialBeingUpdateWithoutTeamDataInput!
+}
+
+input FinancialBeingUpsertNestedInput {
+  update: FinancialBeingUpdateDataInput!
+  create: FinancialBeingCreateInput!
+}
+
+input FinancialBeingUpsertWithWhereUniqueWithoutTeamInput {
+  where: FinancialBeingWhereUniqueInput!
+  update: FinancialBeingUpdateWithoutTeamDataInput!
+  create: FinancialBeingCreateWithoutTeamInput!
+}
+
+input FinancialBeingWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  type: FBType
+  type_not: FBType
+  type_in: [FBType!]
+  type_not_in: [FBType!]
+  kind: FBKind
+  kind_not: FBKind
+  kind_in: [FBKind!]
+  kind_not_in: [FBKind!]
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  slug: String
+  slug_not: String
+  slug_in: [String!]
+  slug_not_in: [String!]
+  slug_lt: String
+  slug_lte: String
+  slug_gt: String
+  slug_gte: String
+  slug_contains: String
+  slug_not_contains: String
+  slug_starts_with: String
+  slug_not_starts_with: String
+  slug_ends_with: String
+  slug_not_ends_with: String
+  avatar: String
+  avatar_not: String
+  avatar_in: [String!]
+  avatar_not_in: [String!]
+  avatar_lt: String
+  avatar_lte: String
+  avatar_gt: String
+  avatar_gte: String
+  avatar_contains: String
+  avatar_not_contains: String
+  avatar_starts_with: String
+  avatar_not_starts_with: String
+  avatar_ends_with: String
+  avatar_not_ends_with: String
+  team: TeamWhereInput
+  status_every: FBStatusWhereInput
+  status_some: FBStatusWhereInput
+  status_none: FBStatusWhereInput
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  parent: FinancialBeingWhereInput
+  AND: [FinancialBeingWhereInput!]
+  OR: [FinancialBeingWhereInput!]
+  NOT: [FinancialBeingWhereInput!]
+}
+
+input FinancialBeingWhereUniqueInput {
+  id: ID
+  name: String
+  slug: String
+}
+
+scalar Long
+
+type Member {
+  id: ID!
+  alias: String
+  teams(where: TeamMembersWhereInput, orderBy: TeamMembersOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TeamMembers!]
+  authId: String!
+  visible: Boolean!
+  status(where: MemberStatusWhereInput, orderBy: MemberStatusOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [MemberStatus!]
+  createdAt: DateTime!
+}
+
+type MemberConnection {
+  pageInfo: PageInfo!
+  edges: [MemberEdge]!
+  aggregate: AggregateMember!
+}
+
+input MemberCreateInput {
+  alias: String
+  teams: TeamMembersCreateManyWithoutMemberInput
+  authId: String!
+  visible: Boolean
+  status: MemberStatusCreateManyInput
+}
+
+input MemberCreateOneWithoutTeamsInput {
+  create: MemberCreateWithoutTeamsInput
+  connect: MemberWhereUniqueInput
+}
+
+input MemberCreateWithoutTeamsInput {
+  alias: String
+  authId: String!
+  visible: Boolean
+  status: MemberStatusCreateManyInput
+}
+
+type MemberEdge {
+  node: Member!
+  cursor: String!
+}
+
+enum MemberOrderByInput {
+  id_ASC
+  id_DESC
+  alias_ASC
+  alias_DESC
+  authId_ASC
+  authId_DESC
+  visible_ASC
+  visible_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type MemberPreviousValues {
+  id: ID!
+  alias: String
+  authId: String!
+  visible: Boolean!
+  createdAt: DateTime!
+}
+
+type MemberStatus {
+  status: Status
+  reason: String
+  createdAt: DateTime!
+}
+
+type MemberStatusConnection {
+  pageInfo: PageInfo!
+  edges: [MemberStatusEdge]!
+  aggregate: AggregateMemberStatus!
+}
+
+input MemberStatusCreateInput {
+  status: Status
+  reason: String
+}
+
+input MemberStatusCreateManyInput {
+  create: [MemberStatusCreateInput!]
+}
+
+type MemberStatusEdge {
+  node: MemberStatus!
+  cursor: String!
+}
+
+enum MemberStatusOrderByInput {
+  status_ASC
+  status_DESC
+  reason_ASC
+  reason_DESC
+  createdAt_ASC
+  createdAt_DESC
+  id_ASC
+  id_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type MemberStatusPreviousValues {
+  status: Status
+  reason: String
+  createdAt: DateTime!
+}
+
+type MemberStatusSubscriptionPayload {
+  mutation: MutationType!
+  node: MemberStatus
+  updatedFields: [String!]
+  previousValues: MemberStatusPreviousValues
+}
+
+input MemberStatusSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: MemberStatusWhereInput
+  AND: [MemberStatusSubscriptionWhereInput!]
+  OR: [MemberStatusSubscriptionWhereInput!]
+  NOT: [MemberStatusSubscriptionWhereInput!]
+}
+
+input MemberStatusUpdateInput {
+  status: Status
+  reason: String
+}
+
+input MemberStatusUpdateManyInput {
+  create: [MemberStatusCreateInput!]
+}
+
+input MemberStatusWhereInput {
+  status: Status
+  status_not: Status
+  status_in: [Status!]
+  status_not_in: [Status!]
+  reason: String
+  reason_not: String
+  reason_in: [String!]
+  reason_not_in: [String!]
+  reason_lt: String
+  reason_lte: String
+  reason_gt: String
+  reason_gte: String
+  reason_contains: String
+  reason_not_contains: String
+  reason_starts_with: String
+  reason_not_starts_with: String
+  reason_ends_with: String
+  reason_not_ends_with: String
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  AND: [MemberStatusWhereInput!]
+  OR: [MemberStatusWhereInput!]
+  NOT: [MemberStatusWhereInput!]
+}
+
+type MemberSubscriptionPayload {
+  mutation: MutationType!
+  node: Member
+  updatedFields: [String!]
+  previousValues: MemberPreviousValues
+}
+
+input MemberSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: MemberWhereInput
+  AND: [MemberSubscriptionWhereInput!]
+  OR: [MemberSubscriptionWhereInput!]
+  NOT: [MemberSubscriptionWhereInput!]
+}
+
+input MemberUpdateInput {
+  alias: String
+  teams: TeamMembersUpdateManyWithoutMemberInput
+  authId: String
+  visible: Boolean
+  status: MemberStatusUpdateManyInput
+}
+
+input MemberUpdateOneWithoutTeamsInput {
+  create: MemberCreateWithoutTeamsInput
+  update: MemberUpdateWithoutTeamsDataInput
+  upsert: MemberUpsertWithoutTeamsInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: MemberWhereUniqueInput
+}
+
+input MemberUpdateWithoutTeamsDataInput {
+  alias: String
+  authId: String
+  visible: Boolean
+  status: MemberStatusUpdateManyInput
+}
+
+input MemberUpsertWithoutTeamsInput {
+  update: MemberUpdateWithoutTeamsDataInput!
+  create: MemberCreateWithoutTeamsInput!
+}
+
+input MemberWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  alias: String
+  alias_not: String
+  alias_in: [String!]
+  alias_not_in: [String!]
+  alias_lt: String
+  alias_lte: String
+  alias_gt: String
+  alias_gte: String
+  alias_contains: String
+  alias_not_contains: String
+  alias_starts_with: String
+  alias_not_starts_with: String
+  alias_ends_with: String
+  alias_not_ends_with: String
+  teams_every: TeamMembersWhereInput
+  teams_some: TeamMembersWhereInput
+  teams_none: TeamMembersWhereInput
+  authId: String
+  authId_not: String
+  authId_in: [String!]
+  authId_not_in: [String!]
+  authId_lt: String
+  authId_lte: String
+  authId_gt: String
+  authId_gte: String
+  authId_contains: String
+  authId_not_contains: String
+  authId_starts_with: String
+  authId_not_starts_with: String
+  authId_ends_with: String
+  authId_not_ends_with: String
+  visible: Boolean
+  visible_not: Boolean
+  status_every: MemberStatusWhereInput
+  status_some: MemberStatusWhereInput
+  status_none: MemberStatusWhereInput
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  AND: [MemberWhereInput!]
+  OR: [MemberWhereInput!]
+  NOT: [MemberWhereInput!]
+}
+
+input MemberWhereUniqueInput {
+  id: ID
+  authId: String
+}
+
+type Mutation {
+  createFBStatus(data: FBStatusCreateInput!): FBStatus!
+  updateManyFBStatuses(data: FBStatusUpdateInput!, where: FBStatusWhereInput): BatchPayload!
+  deleteManyFBStatuses(where: FBStatusWhereInput): BatchPayload!
+  createFinancialBeing(data: FinancialBeingCreateInput!): FinancialBeing!
+  updateFinancialBeing(data: FinancialBeingUpdateInput!, where: FinancialBeingWhereUniqueInput!): FinancialBeing
+  updateManyFinancialBeings(data: FinancialBeingUpdateInput!, where: FinancialBeingWhereInput): BatchPayload!
+  upsertFinancialBeing(where: FinancialBeingWhereUniqueInput!, create: FinancialBeingCreateInput!, update: FinancialBeingUpdateInput!): FinancialBeing!
+  deleteFinancialBeing(where: FinancialBeingWhereUniqueInput!): FinancialBeing
+  deleteManyFinancialBeings(where: FinancialBeingWhereInput): BatchPayload!
+  createMember(data: MemberCreateInput!): Member!
+  updateMember(data: MemberUpdateInput!, where: MemberWhereUniqueInput!): Member
+  updateManyMembers(data: MemberUpdateInput!, where: MemberWhereInput): BatchPayload!
+  upsertMember(where: MemberWhereUniqueInput!, create: MemberCreateInput!, update: MemberUpdateInput!): Member!
+  deleteMember(where: MemberWhereUniqueInput!): Member
+  deleteManyMembers(where: MemberWhereInput): BatchPayload!
+  createMemberStatus(data: MemberStatusCreateInput!): MemberStatus!
+  updateManyMemberStatuses(data: MemberStatusUpdateInput!, where: MemberStatusWhereInput): BatchPayload!
+  deleteManyMemberStatuses(where: MemberStatusWhereInput): BatchPayload!
+  createTeam(data: TeamCreateInput!): Team!
+  updateTeam(data: TeamUpdateInput!, where: TeamWhereUniqueInput!): Team
+  updateManyTeams(data: TeamUpdateInput!, where: TeamWhereInput): BatchPayload!
+  upsertTeam(where: TeamWhereUniqueInput!, create: TeamCreateInput!, update: TeamUpdateInput!): Team!
+  deleteTeam(where: TeamWhereUniqueInput!): Team
+  deleteManyTeams(where: TeamWhereInput): BatchPayload!
+  createTeamMemberStatus(data: TeamMemberStatusCreateInput!): TeamMemberStatus!
+  updateTeamMemberStatus(data: TeamMemberStatusUpdateInput!, where: TeamMemberStatusWhereUniqueInput!): TeamMemberStatus
+  updateManyTeamMemberStatuses(data: TeamMemberStatusUpdateInput!, where: TeamMemberStatusWhereInput): BatchPayload!
+  upsertTeamMemberStatus(where: TeamMemberStatusWhereUniqueInput!, create: TeamMemberStatusCreateInput!, update: TeamMemberStatusUpdateInput!): TeamMemberStatus!
+  deleteTeamMemberStatus(where: TeamMemberStatusWhereUniqueInput!): TeamMemberStatus
+  deleteManyTeamMemberStatuses(where: TeamMemberStatusWhereInput): BatchPayload!
+  createTeamMembers(data: TeamMembersCreateInput!): TeamMembers!
+  updateTeamMembers(data: TeamMembersUpdateInput!, where: TeamMembersWhereUniqueInput!): TeamMembers
+  updateManyTeamMemberses(data: TeamMembersUpdateInput!, where: TeamMembersWhereInput): BatchPayload!
+  upsertTeamMembers(where: TeamMembersWhereUniqueInput!, create: TeamMembersCreateInput!, update: TeamMembersUpdateInput!): TeamMembers!
+  deleteTeamMembers(where: TeamMembersWhereUniqueInput!): TeamMembers
+  deleteManyTeamMemberses(where: TeamMembersWhereInput): BatchPayload!
+  createTeamProfile(data: TeamProfileCreateInput!): TeamProfile!
+  updateManyTeamProfiles(data: TeamProfileUpdateInput!, where: TeamProfileWhereInput): BatchPayload!
+  deleteManyTeamProfiles(where: TeamProfileWhereInput): BatchPayload!
+  createTeamStatus(data: TeamStatusCreateInput!): TeamStatus!
+  updateManyTeamStatuses(data: TeamStatusUpdateInput!, where: TeamStatusWhereInput): BatchPayload!
+  deleteManyTeamStatuses(where: TeamStatusWhereInput): BatchPayload!
+  createWallet(data: WalletCreateInput!): Wallet!
+  updateManyWallets(data: WalletUpdateInput!, where: WalletWhereInput): BatchPayload!
+  deleteManyWallets(where: WalletWhereInput): BatchPayload!
+}
+
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type Query {
+  fBStatuses(where: FBStatusWhereInput, orderBy: FBStatusOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [FBStatus]!
+  fBStatusesConnection(where: FBStatusWhereInput, orderBy: FBStatusOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): FBStatusConnection!
+  financialBeing(where: FinancialBeingWhereUniqueInput!): FinancialBeing
+  financialBeings(where: FinancialBeingWhereInput, orderBy: FinancialBeingOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [FinancialBeing]!
+  financialBeingsConnection(where: FinancialBeingWhereInput, orderBy: FinancialBeingOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): FinancialBeingConnection!
+  member(where: MemberWhereUniqueInput!): Member
+  members(where: MemberWhereInput, orderBy: MemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Member]!
+  membersConnection(where: MemberWhereInput, orderBy: MemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): MemberConnection!
+  memberStatuses(where: MemberStatusWhereInput, orderBy: MemberStatusOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [MemberStatus]!
+  memberStatusesConnection(where: MemberStatusWhereInput, orderBy: MemberStatusOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): MemberStatusConnection!
+  team(where: TeamWhereUniqueInput!): Team
+  teams(where: TeamWhereInput, orderBy: TeamOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Team]!
+  teamsConnection(where: TeamWhereInput, orderBy: TeamOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TeamConnection!
+  teamMemberStatus(where: TeamMemberStatusWhereUniqueInput!): TeamMemberStatus
+  teamMemberStatuses(where: TeamMemberStatusWhereInput, orderBy: TeamMemberStatusOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TeamMemberStatus]!
+  teamMemberStatusesConnection(where: TeamMemberStatusWhereInput, orderBy: TeamMemberStatusOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TeamMemberStatusConnection!
+  teamMembers(where: TeamMembersWhereUniqueInput!): TeamMembers
+  teamMemberses(where: TeamMembersWhereInput, orderBy: TeamMembersOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TeamMembers]!
+  teamMembersesConnection(where: TeamMembersWhereInput, orderBy: TeamMembersOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TeamMembersConnection!
+  teamProfiles(where: TeamProfileWhereInput, orderBy: TeamProfileOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TeamProfile]!
+  teamProfilesConnection(where: TeamProfileWhereInput, orderBy: TeamProfileOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TeamProfileConnection!
+  teamStatuses(where: TeamStatusWhereInput, orderBy: TeamStatusOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TeamStatus]!
+  teamStatusesConnection(where: TeamStatusWhereInput, orderBy: TeamStatusOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TeamStatusConnection!
+  wallets(where: WalletWhereInput, orderBy: WalletOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Wallet]!
+  walletsConnection(where: WalletWhereInput, orderBy: WalletOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): WalletConnection!
+  node(id: ID!): Node
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  APPLIED
+  INVITED
+  REMOVED
+}
+
+type Subscription {
+  fBStatus(where: FBStatusSubscriptionWhereInput): FBStatusSubscriptionPayload
+  financialBeing(where: FinancialBeingSubscriptionWhereInput): FinancialBeingSubscriptionPayload
+  member(where: MemberSubscriptionWhereInput): MemberSubscriptionPayload
+  memberStatus(where: MemberStatusSubscriptionWhereInput): MemberStatusSubscriptionPayload
+  team(where: TeamSubscriptionWhereInput): TeamSubscriptionPayload
+  teamMemberStatus(where: TeamMemberStatusSubscriptionWhereInput): TeamMemberStatusSubscriptionPayload
+  teamMembers(where: TeamMembersSubscriptionWhereInput): TeamMembersSubscriptionPayload
+  teamProfile(where: TeamProfileSubscriptionWhereInput): TeamProfileSubscriptionPayload
+  teamStatus(where: TeamStatusSubscriptionWhereInput): TeamStatusSubscriptionPayload
+  wallet(where: WalletSubscriptionWhereInput): WalletSubscriptionPayload
+}
+
+type Team {
+  id: ID!
+  name: String!
+  slug: String!
+  profile: TeamProfile
+  members(where: TeamMembersWhereInput, orderBy: TeamMembersOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TeamMembers!]
+  owner: String!
+  wallet: Wallet
+  fb(where: FinancialBeingWhereInput, orderBy: FinancialBeingOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [FinancialBeing!]
+  status(where: TeamStatusWhereInput, orderBy: TeamStatusOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TeamStatus!]
+  createdAt: DateTime!
+}
+
+type TeamConnection {
+  pageInfo: PageInfo!
+  edges: [TeamEdge]!
+  aggregate: AggregateTeam!
+}
+
+input TeamCreateInput {
+  name: String!
+  slug: String!
+  profile: TeamProfileCreateOneInput
+  members: TeamMembersCreateManyWithoutTeamInput
+  owner: String!
+  wallet: WalletCreateOneInput
+  fb: FinancialBeingCreateManyWithoutTeamInput
+  status: TeamStatusCreateManyInput
+}
+
+input TeamCreateOneWithoutFbInput {
+  create: TeamCreateWithoutFbInput
+  connect: TeamWhereUniqueInput
+}
+
+input TeamCreateOneWithoutMembersInput {
+  create: TeamCreateWithoutMembersInput
+  connect: TeamWhereUniqueInput
+}
+
+input TeamCreateWithoutFbInput {
+  name: String!
+  slug: String!
+  profile: TeamProfileCreateOneInput
+  members: TeamMembersCreateManyWithoutTeamInput
+  owner: String!
+  wallet: WalletCreateOneInput
+  status: TeamStatusCreateManyInput
+}
+
+input TeamCreateWithoutMembersInput {
+  name: String!
+  slug: String!
+  profile: TeamProfileCreateOneInput
+  owner: String!
+  wallet: WalletCreateOneInput
+  fb: FinancialBeingCreateManyWithoutTeamInput
+  status: TeamStatusCreateManyInput
+}
+
+type TeamEdge {
+  node: Team!
+  cursor: String!
+}
+
+type TeamMembers {
+  id: ID!
+  member: Member
+  team: Team
+  role: Role
+  status(where: TeamMemberStatusWhereInput, orderBy: TeamMemberStatusOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [TeamMemberStatus!]
+  email: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type TeamMembersConnection {
+  pageInfo: PageInfo!
+  edges: [TeamMembersEdge]!
+  aggregate: AggregateTeamMembers!
+}
+
+input TeamMembersCreateInput {
+  member: MemberCreateOneWithoutTeamsInput
+  team: TeamCreateOneWithoutMembersInput
+  role: Role
+  status: TeamMemberStatusCreateManyInput
+  email: String
+}
+
+input TeamMembersCreateManyWithoutMemberInput {
+  create: [TeamMembersCreateWithoutMemberInput!]
+  connect: [TeamMembersWhereUniqueInput!]
+}
+
+input TeamMembersCreateManyWithoutTeamInput {
+  create: [TeamMembersCreateWithoutTeamInput!]
+  connect: [TeamMembersWhereUniqueInput!]
+}
+
+input TeamMembersCreateWithoutMemberInput {
+  team: TeamCreateOneWithoutMembersInput
+  role: Role
+  status: TeamMemberStatusCreateManyInput
+  email: String
+}
+
+input TeamMembersCreateWithoutTeamInput {
+  member: MemberCreateOneWithoutTeamsInput
+  role: Role
+  status: TeamMemberStatusCreateManyInput
+  email: String
+}
+
+type TeamMembersEdge {
+  node: TeamMembers!
+  cursor: String!
+}
+
+enum TeamMembersOrderByInput {
+  id_ASC
+  id_DESC
+  role_ASC
+  role_DESC
+  email_ASC
+  email_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type TeamMembersPreviousValues {
+  id: ID!
+  role: Role
+  email: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type TeamMembersSubscriptionPayload {
+  mutation: MutationType!
+  node: TeamMembers
+  updatedFields: [String!]
+  previousValues: TeamMembersPreviousValues
+}
+
+input TeamMembersSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: TeamMembersWhereInput
+  AND: [TeamMembersSubscriptionWhereInput!]
+  OR: [TeamMembersSubscriptionWhereInput!]
+  NOT: [TeamMembersSubscriptionWhereInput!]
+}
+
+type TeamMemberStatus {
+  id: ID!
+  status: Status
+  reason: String
+  createdAt: DateTime!
+}
+
+type TeamMemberStatusConnection {
+  pageInfo: PageInfo!
+  edges: [TeamMemberStatusEdge]!
+  aggregate: AggregateTeamMemberStatus!
+}
+
+input TeamMemberStatusCreateInput {
+  status: Status
+  reason: String
+}
+
+input TeamMemberStatusCreateManyInput {
+  create: [TeamMemberStatusCreateInput!]
+  connect: [TeamMemberStatusWhereUniqueInput!]
+}
+
+type TeamMemberStatusEdge {
+  node: TeamMemberStatus!
+  cursor: String!
+}
+
+enum TeamMemberStatusOrderByInput {
+  id_ASC
+  id_DESC
+  status_ASC
+  status_DESC
+  reason_ASC
+  reason_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type TeamMemberStatusPreviousValues {
+  id: ID!
+  status: Status
+  reason: String
+  createdAt: DateTime!
+}
+
+type TeamMemberStatusSubscriptionPayload {
+  mutation: MutationType!
+  node: TeamMemberStatus
+  updatedFields: [String!]
+  previousValues: TeamMemberStatusPreviousValues
+}
+
+input TeamMemberStatusSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: TeamMemberStatusWhereInput
+  AND: [TeamMemberStatusSubscriptionWhereInput!]
+  OR: [TeamMemberStatusSubscriptionWhereInput!]
+  NOT: [TeamMemberStatusSubscriptionWhereInput!]
+}
+
+input TeamMemberStatusUpdateDataInput {
+  status: Status
+  reason: String
+}
+
+input TeamMemberStatusUpdateInput {
+  status: Status
+  reason: String
+}
+
+input TeamMemberStatusUpdateManyInput {
+  create: [TeamMemberStatusCreateInput!]
+  update: [TeamMemberStatusUpdateWithWhereUniqueNestedInput!]
+  upsert: [TeamMemberStatusUpsertWithWhereUniqueNestedInput!]
+  delete: [TeamMemberStatusWhereUniqueInput!]
+  connect: [TeamMemberStatusWhereUniqueInput!]
+  disconnect: [TeamMemberStatusWhereUniqueInput!]
+}
+
+input TeamMemberStatusUpdateWithWhereUniqueNestedInput {
+  where: TeamMemberStatusWhereUniqueInput!
+  data: TeamMemberStatusUpdateDataInput!
+}
+
+input TeamMemberStatusUpsertWithWhereUniqueNestedInput {
+  where: TeamMemberStatusWhereUniqueInput!
+  update: TeamMemberStatusUpdateDataInput!
+  create: TeamMemberStatusCreateInput!
+}
+
+input TeamMemberStatusWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  status: Status
+  status_not: Status
+  status_in: [Status!]
+  status_not_in: [Status!]
+  reason: String
+  reason_not: String
+  reason_in: [String!]
+  reason_not_in: [String!]
+  reason_lt: String
+  reason_lte: String
+  reason_gt: String
+  reason_gte: String
+  reason_contains: String
+  reason_not_contains: String
+  reason_starts_with: String
+  reason_not_starts_with: String
+  reason_ends_with: String
+  reason_not_ends_with: String
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  AND: [TeamMemberStatusWhereInput!]
+  OR: [TeamMemberStatusWhereInput!]
+  NOT: [TeamMemberStatusWhereInput!]
+}
+
+input TeamMemberStatusWhereUniqueInput {
+  id: ID
+}
+
+input TeamMembersUpdateInput {
+  member: MemberUpdateOneWithoutTeamsInput
+  team: TeamUpdateOneWithoutMembersInput
+  role: Role
+  status: TeamMemberStatusUpdateManyInput
+  email: String
+}
+
+input TeamMembersUpdateManyWithoutMemberInput {
+  create: [TeamMembersCreateWithoutMemberInput!]
+  delete: [TeamMembersWhereUniqueInput!]
+  connect: [TeamMembersWhereUniqueInput!]
+  disconnect: [TeamMembersWhereUniqueInput!]
+  update: [TeamMembersUpdateWithWhereUniqueWithoutMemberInput!]
+  upsert: [TeamMembersUpsertWithWhereUniqueWithoutMemberInput!]
+}
+
+input TeamMembersUpdateManyWithoutTeamInput {
+  create: [TeamMembersCreateWithoutTeamInput!]
+  delete: [TeamMembersWhereUniqueInput!]
+  connect: [TeamMembersWhereUniqueInput!]
+  disconnect: [TeamMembersWhereUniqueInput!]
+  update: [TeamMembersUpdateWithWhereUniqueWithoutTeamInput!]
+  upsert: [TeamMembersUpsertWithWhereUniqueWithoutTeamInput!]
+}
+
+input TeamMembersUpdateWithoutMemberDataInput {
+  team: TeamUpdateOneWithoutMembersInput
+  role: Role
+  status: TeamMemberStatusUpdateManyInput
+  email: String
+}
+
+input TeamMembersUpdateWithoutTeamDataInput {
+  member: MemberUpdateOneWithoutTeamsInput
+  role: Role
+  status: TeamMemberStatusUpdateManyInput
+  email: String
+}
+
+input TeamMembersUpdateWithWhereUniqueWithoutMemberInput {
+  where: TeamMembersWhereUniqueInput!
+  data: TeamMembersUpdateWithoutMemberDataInput!
+}
+
+input TeamMembersUpdateWithWhereUniqueWithoutTeamInput {
+  where: TeamMembersWhereUniqueInput!
+  data: TeamMembersUpdateWithoutTeamDataInput!
+}
+
+input TeamMembersUpsertWithWhereUniqueWithoutMemberInput {
+  where: TeamMembersWhereUniqueInput!
+  update: TeamMembersUpdateWithoutMemberDataInput!
+  create: TeamMembersCreateWithoutMemberInput!
+}
+
+input TeamMembersUpsertWithWhereUniqueWithoutTeamInput {
+  where: TeamMembersWhereUniqueInput!
+  update: TeamMembersUpdateWithoutTeamDataInput!
+  create: TeamMembersCreateWithoutTeamInput!
+}
+
+input TeamMembersWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  member: MemberWhereInput
+  team: TeamWhereInput
+  role: Role
+  role_not: Role
+  role_in: [Role!]
+  role_not_in: [Role!]
+  status_every: TeamMemberStatusWhereInput
+  status_some: TeamMemberStatusWhereInput
+  status_none: TeamMemberStatusWhereInput
+  email: String
+  email_not: String
+  email_in: [String!]
+  email_not_in: [String!]
+  email_lt: String
+  email_lte: String
+  email_gt: String
+  email_gte: String
+  email_contains: String
+  email_not_contains: String
+  email_starts_with: String
+  email_not_starts_with: String
+  email_ends_with: String
+  email_not_ends_with: String
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  AND: [TeamMembersWhereInput!]
+  OR: [TeamMembersWhereInput!]
+  NOT: [TeamMembersWhereInput!]
+}
+
+input TeamMembersWhereUniqueInput {
+  id: ID
+  email: String
+}
+
+enum TeamOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  slug_ASC
+  slug_DESC
+  owner_ASC
+  owner_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type TeamPreviousValues {
+  id: ID!
+  name: String!
+  slug: String!
+  owner: String!
+  createdAt: DateTime!
+}
+
+type TeamProfile {
+  description: String
+  motto: String
+  avatar: String
+  banner: String
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type TeamProfileConnection {
+  pageInfo: PageInfo!
+  edges: [TeamProfileEdge]!
+  aggregate: AggregateTeamProfile!
+}
+
+input TeamProfileCreateInput {
+  description: String
+  motto: String
+  avatar: String
+  banner: String
+}
+
+input TeamProfileCreateOneInput {
+  create: TeamProfileCreateInput
+}
+
+type TeamProfileEdge {
+  node: TeamProfile!
+  cursor: String!
+}
+
+enum TeamProfileOrderByInput {
+  description_ASC
+  description_DESC
+  motto_ASC
+  motto_DESC
+  avatar_ASC
+  avatar_DESC
+  banner_ASC
+  banner_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+  id_ASC
+  id_DESC
+}
+
+type TeamProfilePreviousValues {
+  description: String
+  motto: String
+  avatar: String
+  banner: String
+  updatedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type TeamProfileSubscriptionPayload {
+  mutation: MutationType!
+  node: TeamProfile
+  updatedFields: [String!]
+  previousValues: TeamProfilePreviousValues
+}
+
+input TeamProfileSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: TeamProfileWhereInput
+  AND: [TeamProfileSubscriptionWhereInput!]
+  OR: [TeamProfileSubscriptionWhereInput!]
+  NOT: [TeamProfileSubscriptionWhereInput!]
+}
+
+input TeamProfileUpdateDataInput {
+  description: String
+  motto: String
+  avatar: String
+  banner: String
+}
+
+input TeamProfileUpdateInput {
+  description: String
+  motto: String
+  avatar: String
+  banner: String
+}
+
+input TeamProfileUpdateOneInput {
+  create: TeamProfileCreateInput
+  update: TeamProfileUpdateDataInput
+  upsert: TeamProfileUpsertNestedInput
+  delete: Boolean
+  disconnect: Boolean
+}
+
+input TeamProfileUpsertNestedInput {
+  update: TeamProfileUpdateDataInput!
+  create: TeamProfileCreateInput!
+}
+
+input TeamProfileWhereInput {
+  description: String
+  description_not: String
+  description_in: [String!]
+  description_not_in: [String!]
+  description_lt: String
+  description_lte: String
+  description_gt: String
+  description_gte: String
+  description_contains: String
+  description_not_contains: String
+  description_starts_with: String
+  description_not_starts_with: String
+  description_ends_with: String
+  description_not_ends_with: String
+  motto: String
+  motto_not: String
+  motto_in: [String!]
+  motto_not_in: [String!]
+  motto_lt: String
+  motto_lte: String
+  motto_gt: String
+  motto_gte: String
+  motto_contains: String
+  motto_not_contains: String
+  motto_starts_with: String
+  motto_not_starts_with: String
+  motto_ends_with: String
+  motto_not_ends_with: String
+  avatar: String
+  avatar_not: String
+  avatar_in: [String!]
+  avatar_not_in: [String!]
+  avatar_lt: String
+  avatar_lte: String
+  avatar_gt: String
+  avatar_gte: String
+  avatar_contains: String
+  avatar_not_contains: String
+  avatar_starts_with: String
+  avatar_not_starts_with: String
+  avatar_ends_with: String
+  avatar_not_ends_with: String
+  banner: String
+  banner_not: String
+  banner_in: [String!]
+  banner_not_in: [String!]
+  banner_lt: String
+  banner_lte: String
+  banner_gt: String
+  banner_gte: String
+  banner_contains: String
+  banner_not_contains: String
+  banner_starts_with: String
+  banner_not_starts_with: String
+  banner_ends_with: String
+  banner_not_ends_with: String
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  AND: [TeamProfileWhereInput!]
+  OR: [TeamProfileWhereInput!]
+  NOT: [TeamProfileWhereInput!]
+}
+
+type TeamStatus {
+  status: Status
+  reason: String
+  createdAt: DateTime!
+}
+
+type TeamStatusConnection {
+  pageInfo: PageInfo!
+  edges: [TeamStatusEdge]!
+  aggregate: AggregateTeamStatus!
+}
+
+input TeamStatusCreateInput {
+  status: Status
+  reason: String
+}
+
+input TeamStatusCreateManyInput {
+  create: [TeamStatusCreateInput!]
+}
+
+type TeamStatusEdge {
+  node: TeamStatus!
+  cursor: String!
+}
+
+enum TeamStatusOrderByInput {
+  status_ASC
+  status_DESC
+  reason_ASC
+  reason_DESC
+  createdAt_ASC
+  createdAt_DESC
+  id_ASC
+  id_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type TeamStatusPreviousValues {
+  status: Status
+  reason: String
+  createdAt: DateTime!
+}
+
+type TeamStatusSubscriptionPayload {
+  mutation: MutationType!
+  node: TeamStatus
+  updatedFields: [String!]
+  previousValues: TeamStatusPreviousValues
+}
+
+input TeamStatusSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: TeamStatusWhereInput
+  AND: [TeamStatusSubscriptionWhereInput!]
+  OR: [TeamStatusSubscriptionWhereInput!]
+  NOT: [TeamStatusSubscriptionWhereInput!]
+}
+
+input TeamStatusUpdateInput {
+  status: Status
+  reason: String
+}
+
+input TeamStatusUpdateManyInput {
+  create: [TeamStatusCreateInput!]
+}
+
+input TeamStatusWhereInput {
+  status: Status
+  status_not: Status
+  status_in: [Status!]
+  status_not_in: [Status!]
+  reason: String
+  reason_not: String
+  reason_in: [String!]
+  reason_not_in: [String!]
+  reason_lt: String
+  reason_lte: String
+  reason_gt: String
+  reason_gte: String
+  reason_contains: String
+  reason_not_contains: String
+  reason_starts_with: String
+  reason_not_starts_with: String
+  reason_ends_with: String
+  reason_not_ends_with: String
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  AND: [TeamStatusWhereInput!]
+  OR: [TeamStatusWhereInput!]
+  NOT: [TeamStatusWhereInput!]
+}
+
+type TeamSubscriptionPayload {
+  mutation: MutationType!
+  node: Team
+  updatedFields: [String!]
+  previousValues: TeamPreviousValues
+}
+
+input TeamSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: TeamWhereInput
+  AND: [TeamSubscriptionWhereInput!]
+  OR: [TeamSubscriptionWhereInput!]
+  NOT: [TeamSubscriptionWhereInput!]
+}
+
+input TeamUpdateInput {
+  name: String
+  slug: String
+  profile: TeamProfileUpdateOneInput
+  members: TeamMembersUpdateManyWithoutTeamInput
+  owner: String
+  wallet: WalletUpdateOneInput
+  fb: FinancialBeingUpdateManyWithoutTeamInput
+  status: TeamStatusUpdateManyInput
+}
+
+input TeamUpdateOneWithoutFbInput {
+  create: TeamCreateWithoutFbInput
+  update: TeamUpdateWithoutFbDataInput
+  upsert: TeamUpsertWithoutFbInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: TeamWhereUniqueInput
+}
+
+input TeamUpdateOneWithoutMembersInput {
+  create: TeamCreateWithoutMembersInput
+  update: TeamUpdateWithoutMembersDataInput
+  upsert: TeamUpsertWithoutMembersInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: TeamWhereUniqueInput
+}
+
+input TeamUpdateWithoutFbDataInput {
+  name: String
+  slug: String
+  profile: TeamProfileUpdateOneInput
+  members: TeamMembersUpdateManyWithoutTeamInput
+  owner: String
+  wallet: WalletUpdateOneInput
+  status: TeamStatusUpdateManyInput
+}
+
+input TeamUpdateWithoutMembersDataInput {
+  name: String
+  slug: String
+  profile: TeamProfileUpdateOneInput
+  owner: String
+  wallet: WalletUpdateOneInput
+  fb: FinancialBeingUpdateManyWithoutTeamInput
+  status: TeamStatusUpdateManyInput
+}
+
+input TeamUpsertWithoutFbInput {
+  update: TeamUpdateWithoutFbDataInput!
+  create: TeamCreateWithoutFbInput!
+}
+
+input TeamUpsertWithoutMembersInput {
+  update: TeamUpdateWithoutMembersDataInput!
+  create: TeamCreateWithoutMembersInput!
+}
+
+input TeamWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  slug: String
+  slug_not: String
+  slug_in: [String!]
+  slug_not_in: [String!]
+  slug_lt: String
+  slug_lte: String
+  slug_gt: String
+  slug_gte: String
+  slug_contains: String
+  slug_not_contains: String
+  slug_starts_with: String
+  slug_not_starts_with: String
+  slug_ends_with: String
+  slug_not_ends_with: String
+  profile: TeamProfileWhereInput
+  members_every: TeamMembersWhereInput
+  members_some: TeamMembersWhereInput
+  members_none: TeamMembersWhereInput
+  owner: String
+  owner_not: String
+  owner_in: [String!]
+  owner_not_in: [String!]
+  owner_lt: String
+  owner_lte: String
+  owner_gt: String
+  owner_gte: String
+  owner_contains: String
+  owner_not_contains: String
+  owner_starts_with: String
+  owner_not_starts_with: String
+  owner_ends_with: String
+  owner_not_ends_with: String
+  wallet: WalletWhereInput
+  fb_every: FinancialBeingWhereInput
+  fb_some: FinancialBeingWhereInput
+  fb_none: FinancialBeingWhereInput
+  status_every: TeamStatusWhereInput
+  status_some: TeamStatusWhereInput
+  status_none: TeamStatusWhereInput
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  AND: [TeamWhereInput!]
+  OR: [TeamWhereInput!]
+  NOT: [TeamWhereInput!]
+}
+
+input TeamWhereUniqueInput {
+  id: ID
+  name: String
+  slug: String
+}
+
+type Wallet {
+  balance: Float
+  updatedAt: DateTime!
+}
+
+type WalletConnection {
+  pageInfo: PageInfo!
+  edges: [WalletEdge]!
+  aggregate: AggregateWallet!
+}
+
+input WalletCreateInput {
+  balance: Float
+}
+
+input WalletCreateOneInput {
+  create: WalletCreateInput
+}
+
+type WalletEdge {
+  node: Wallet!
+  cursor: String!
+}
+
+enum WalletOrderByInput {
+  balance_ASC
+  balance_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  id_ASC
+  id_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type WalletPreviousValues {
+  balance: Float
+  updatedAt: DateTime!
+}
+
+type WalletSubscriptionPayload {
+  mutation: MutationType!
+  node: Wallet
+  updatedFields: [String!]
+  previousValues: WalletPreviousValues
+}
+
+input WalletSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: WalletWhereInput
+  AND: [WalletSubscriptionWhereInput!]
+  OR: [WalletSubscriptionWhereInput!]
+  NOT: [WalletSubscriptionWhereInput!]
+}
+
+input WalletUpdateDataInput {
+  balance: Float
+}
+
+input WalletUpdateInput {
+  balance: Float
+}
+
+input WalletUpdateOneInput {
+  create: WalletCreateInput
+  update: WalletUpdateDataInput
+  upsert: WalletUpsertNestedInput
+  delete: Boolean
+  disconnect: Boolean
+}
+
+input WalletUpsertNestedInput {
+  update: WalletUpdateDataInput!
+  create: WalletCreateInput!
+}
+
+input WalletWhereInput {
+  balance: Float
+  balance_not: Float
+  balance_in: [Float!]
+  balance_not_in: [Float!]
+  balance_lt: Float
+  balance_lte: Float
+  balance_gt: Float
+  balance_gte: Float
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  AND: [WalletWhereInput!]
+  OR: [WalletWhereInput!]
+  NOT: [WalletWhereInput!]
+}

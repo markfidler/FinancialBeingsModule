@@ -1,4 +1,113 @@
-type User {
-  id: ID! @unique
-  name: String!
+enum Role {
+    OWNER
+    ADMIN
+    MEMBER
+}
+
+enum Status {
+    ACTIVE
+    INACTIVE
+    APPLIED
+    INVITED
+    REMOVED
+}
+
+enum FBType {
+    BOT
+    NET
+    ADVANCED
+}
+
+enum FBKind {
+    TRADER
+    INDICATOR
+    EXTRACTOR
+    PLOTTER
+}
+
+type Team {
+    id: ID! @unique
+    name: String! @unique
+    slug: String! @unique
+    profile: TeamProfile
+    members: [TeamMembers!]! @relation (name: "TeamMembers", onDelete: SET_NULL)
+    owner: String!
+    wallet: Wallet
+    fb: [FinancialBeing!]! @relation (name: "TeamFinancialBeing", onDelete: SET_NULL)
+    status: [TeamStatus!]!
+    createdAt: DateTime!
+}
+
+type TeamProfile {
+    description: String
+    motto: String
+    avatar: String
+    banner: String
+    updatedAt: DateTime!
+    createdAt: DateTime!
+}
+
+type TeamStatus {
+    status: Status @Default(value: inactive)
+    reason: String
+    createdAt: DateTime!
+}
+
+type TeamMembers {
+    id: ID! @unique
+    member: Member @relation (name: "MemberOnTeam", onDelete: SET_NULL)
+    team: Team @relation (name: "TeamMembers", onDelete: SET_NULL)
+    role: Role @default(value: MEMBER)
+    status: [TeamMemberStatus!]!
+    email: String  @unique
+    createdAt: DateTime!
+    updatedAt: DateTime!
+}
+
+type TeamMemberStatus {
+    id: ID! @unique
+    status: Status @Default(value: INACTIVE)
+    reason: String
+    createdAt: DateTime!
+}
+
+type Member {
+    id: ID! @unique
+    alias: String
+    teams: [TeamMembers!]! @relation (name: "MemberOnTeam", onDelete: SET_NULL)
+    authId: String! @unique
+    visible: Boolean! @default(value: true)
+    status: [MemberStatus!]!
+    createdAt: DateTime!
+}
+
+type MemberStatus {
+    status: Status @Default(value: INACTIVE)
+    reason: String
+    createdAt: DateTime!
+}
+
+type Wallet {
+    balance: Float
+    updatedAt: DateTime!
+}
+
+type FinancialBeing {
+    id: ID! @unique
+    type: FBType
+    kind: FBKind
+    name: String! @unique
+    slug: String! @unique
+    avatar: String
+    team: Team @relation (name: "TeamFinancialBeing", onDelete: SET_NULL)
+    status: [FBStatus!]!
+    updatedAt: DateTime!
+    createdAt: DateTime!
+    parent: FinancialBeing
+}
+
+type FBStatus {
+    status: Status @Default(value: inactive)
+    reason: String
+    createdAt: DateTime!
 }

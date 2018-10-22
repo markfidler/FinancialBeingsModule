@@ -1,4 +1,4 @@
-# import Query.TeamConnection, Team from "./generated/prisma.graphql"
+# import Query.FinancialBeingConnection, FinancialBeings from "./db/generated/prisma.graphql"
 
 directive @isAuthenticated on QUERY | FIELD | MUTATION
 directive @hasRole(roles: [String]) on QUERY | FIELD | MUTATION
@@ -6,47 +6,17 @@ directive @isOwner(type: String) on QUERY | MUTATION
 directive @isOwnerOrHasRole(type: String, roles: [String]) on QUERY | MUTATION
 
 type Query {
-    teams: TeamConnection
-    teamDetails: [Team!]! @isAuthenticated
     teamByName(name: String!): Team
-    teamById(teamId: String!): Team
-    teamWithRole(teamId: String!, role: String!): Team
-    teamsByOwner(ownerId: String!): [Team!]! @isAuthenticated
-    teamsByRole: [Team!]! @isAuthenticated
-    owner: Member @isAuthenticated
-    currentMember: Member @isAuthenticated
-    member(authId: String!): Member @isAuthenticated
+    teamsByOwner(ownerId: String!): [Team!]
+    financialBeings: [FinancialBeing]
+    financialBeingsByName(name: String!): [FinancialBeing]
+    financialBeingsByID(id: ID!): [FinancialBeing]
+    financialBeingsByTeamID(teamID: ID!): FinancialBeing
+    financialBeingsByType(type: FBType!): [FinancialBeing]
+    financialBeingsByKind(kind: FBKind!): [FinancialBeing]
 }
 
 type Mutation {
     authenticate(idToken: String!): Member
-    verifyTeamInvite(token: String!): TeamMembers
-    createTeam(name: String!, slug: String!, botName: String!, botSlug: String!): Team @isAuthenticated
-    updateTeamProfile(slug: String!, description: String, motto: String, avatar: String, banner: String): Team @isAuthenticated
-    updateFB(fbId: String!, avatar: String): FinancialBeings @isAuthenticated
-    deleteTeam(slug: String!): Team @isAuthenticated @isOwner(type: "Team")
-    getAzureSAS(teamSlug: String!):String
-    sendMemberInviteSG(email: String!, teamId: String!): String
-    confirmMember(token: String!): String
-    removeTeamMember(teamId: String!, memberId: String!): String
-}
-
-fragment MemberInfo on Member {
-    id
-    authId
-    alias
-    isActive
-    profile {
-        ...MemberProfileInfo
-    }
-}
-
-fragment MemberProfileInfo on MemberProfile {
-    firstName
-    lastName
-    email
-    avatar
-    role {
-        name
-    }
+    createFinancialBeing(name: String!, slug: String!, type: FBType!, kind: FBKind!, parentID: String!, teamID: String!): FinancialBeing
 }
