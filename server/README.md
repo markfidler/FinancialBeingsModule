@@ -64,7 +64,7 @@ Quick reference - if you need to require dotenv, you can use `-r dotenv/config`
 # DATABASE
 DB_HOST=
 DB_USER=
-DB_PASS=root
+DB_PASS=
 DB_DATABASE=
 DB_PORT=
 
