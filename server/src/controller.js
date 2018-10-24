@@ -7,7 +7,7 @@ const {importSchema} = require('graphql-import');
 const {makeExecutableSchema} = require('graphql-tools');
 
 const {logger} = require('./utils');
-const {getTeamByOwnerId} = require('./gateways/teams');
+const {getTeamByOwnerId, getTeamByID, getAllTeams} = require('./gateways/teams');
 
 const BEINGS_FRAGMENT = require('./db/graphql/BeingsFragment');
 
@@ -85,10 +85,20 @@ const resolvers = {
         throw e;
       }
     },
-    // async financialBeingsByTeamID(parent, {team}, ctx, info) {
-    //   let data =  await ctx.db.query.financialBeings({where: {team: team}}, BEINGS_FRAGMENT);
-    //   return data;
-    // },
+    async financialBeingsByTeamID(parent, {team}, ctx, info) {
+      try {
+        
+        return await ctx.db.query.financialBeings({where: {team: team}}, BEINGS_FRAGMENT);
+      } catch (e) {
+        if (e.__proto__.name !== 'GraphQLError') {
+          logger.log({level: 'error', message: e.message});
+          
+          throw new GraphQLError('Something went wrong while getting Financial Beings');
+        }
+        
+        throw e;
+      }
+    },
     /**
      * Query function - get financial beings by type
      * @param {Object} parent - The result of the previous resolver call.
@@ -157,50 +167,85 @@ const resolvers = {
      */
     async createFinancialBeing(parent, args, ctx, info) {
       try {
-        // We can extract the caller ID from JWT
-        const caller = ctx.jwt.sub.split('|')[1];
+        const owner = ctx.userid;
         
-        // TODO@Urk: we are creating a mechanism to extract data from token
         // That means we need to verify the JWT, since we can't just add FB
         // without properly checking the user first (and its access rights)
         // For now, we'll just use the data from which we received from JWT
-        let teamFinancialBeing = await getTeamByOwnerId(caller, ctx.req.cookies['Authorization']);
         
-        teamFinancialBeing = _.filter(teamFinancialBeing.teamsByOwner, e => {
-          return e.owner === caller;
-        });
+        const data = {
+          type: args.type,
+          kind: args.kind,
+          name: args.name,
+          slug: args.slug,
+          owner: owner,
+          admins: [
+            owner
+          ]
+        };
         
-        if (teamFinancialBeing.length < 1) {
-          logger.log({level: 'warn', message: 'Provided team doesn\'t exist!'});
-          throw new GraphQLError('Provided team doesn\'t exist!');
-        }
-        
-        const parentFinancialBeing = await resolvers.Query.financialBeingsByID(parent, {id: args.parentID}, ctx, info);
-        
-        if (parentFinancialBeing.length < 1) {
-          logger.log({level: 'warn', message: 'Invalid Financial Being parent'});
-          throw new GraphQLError('Invalid Financial Being parent');
-        }
-        
-        return await ctx.db.mutation.createFinancialBeing({
-          data: {
-            type: args.type,
-            kind: args.kind,
-            name: args.name,
-            slug: args.slug,
-            owner: caller,
-            team: {
-              connect: {
-                id: teamFinancialBeing.id
-              }
-            },
-            parent: {
-              connect: {
-                id: parentFinancialBeing.id
-              }
+        if (args.teamID) {
+          // TODO@cordo-van-saviour: change this when API starts working again
+          // let teams = await getTeamByID(args.teamID, ctx.req.cookies['Authorization']);
+          
+          let allTeams = await getAllTeams();
+          
+          allTeams = _.filter(allTeams.teams.edges, e => {
+            
+            if (e.node.id === args.teamID) {
+              
+              return _.filter(allTeams.teams.members, e => {
+                
+                return e.authId.split('|')[1] === owner;
+              });
             }
+          });
+          
+          if (allTeams.length < 1) {
+            logger.log({level: 'warn', message: 'Provided team doesn\'t exist!'});
+            throw new GraphQLError('Provided team doesn\'t exist!');
           }
+          
+          // obligatory check to see if we perhaps have a bug here
+          if (allTeams.length > 1) {
+            logger.log({
+              level: 'error',
+              message: 'Ok, so we do have a bug here. Check to see why we have more than one teamIDs'
+            });
+            
+            throw new GraphQLError('Something went wrong while creating team!');
+          }
+          
+          allTeams = allTeams[0];
+          
+          data.team = {
+            connect: {
+              id: allTeams.node.id
+            }
+          };
+        }
+        
+        if (args.parentID) {
+          const parentFinancialBeing = await resolvers.Query.financialBeingsByID(parent, {id: args.parentID}, ctx,
+            info);
+          
+          if (parentFinancialBeing.length < 1) {
+            logger.log({level: 'warn', message: 'Invalid Financial Being parent'});
+            throw new GraphQLError('Invalid Financial Being parent');
+          }
+          
+          data.parent = {
+            connect: {
+              id: parentFinancialBeing.id
+            }
+          };
+        }
+        
+        // now call the create function
+        return await ctx.db.mutation.createFinancialBeing({
+          data: data
         }, BEINGS_FRAGMENT);
+        
       } catch (e) {
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});

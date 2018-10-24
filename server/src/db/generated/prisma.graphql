@@ -163,8 +163,8 @@ enum FBType {
 
 type FinancialBeing {
   id: ID!
-  type: FBType
-  kind: FBKind
+  type: FBType!
+  kind: FBKind!
   name: String!
   slug: String!
   avatar: String
@@ -173,6 +173,8 @@ type FinancialBeing {
   updatedAt: DateTime!
   createdAt: DateTime!
   parent: FinancialBeing
+  owner: Member!
+  admins(where: MemberWhereInput, orderBy: MemberOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Member!]
 }
 
 type FinancialBeingConnection {
@@ -182,14 +184,16 @@ type FinancialBeingConnection {
 }
 
 input FinancialBeingCreateInput {
-  type: FBType
-  kind: FBKind
+  type: FBType!
+  kind: FBKind!
   name: String!
   slug: String!
   avatar: String
   team: TeamCreateOneWithoutFbInput
   status: FBStatusCreateManyInput
   parent: FinancialBeingCreateOneInput
+  owner: MemberCreateOneInput!
+  admins: MemberCreateManyInput
 }
 
 input FinancialBeingCreateManyWithoutTeamInput {
@@ -203,13 +207,15 @@ input FinancialBeingCreateOneInput {
 }
 
 input FinancialBeingCreateWithoutTeamInput {
-  type: FBType
-  kind: FBKind
+  type: FBType!
+  kind: FBKind!
   name: String!
   slug: String!
   avatar: String
   status: FBStatusCreateManyInput
   parent: FinancialBeingCreateOneInput
+  owner: MemberCreateOneInput!
+  admins: MemberCreateManyInput
 }
 
 type FinancialBeingEdge {
@@ -238,8 +244,8 @@ enum FinancialBeingOrderByInput {
 
 type FinancialBeingPreviousValues {
   id: ID!
-  type: FBType
-  kind: FBKind
+  type: FBType!
+  kind: FBKind!
   name: String!
   slug: String!
   avatar: String
@@ -274,6 +280,8 @@ input FinancialBeingUpdateDataInput {
   team: TeamUpdateOneWithoutFbInput
   status: FBStatusUpdateManyInput
   parent: FinancialBeingUpdateOneInput
+  owner: MemberUpdateOneRequiredInput
+  admins: MemberUpdateManyInput
 }
 
 input FinancialBeingUpdateInput {
@@ -285,6 +293,8 @@ input FinancialBeingUpdateInput {
   team: TeamUpdateOneWithoutFbInput
   status: FBStatusUpdateManyInput
   parent: FinancialBeingUpdateOneInput
+  owner: MemberUpdateOneRequiredInput
+  admins: MemberUpdateManyInput
 }
 
 input FinancialBeingUpdateManyWithoutTeamInput {
@@ -313,6 +323,8 @@ input FinancialBeingUpdateWithoutTeamDataInput {
   avatar: String
   status: FBStatusUpdateManyInput
   parent: FinancialBeingUpdateOneInput
+  owner: MemberUpdateOneRequiredInput
+  admins: MemberUpdateManyInput
 }
 
 input FinancialBeingUpdateWithWhereUniqueWithoutTeamInput {
@@ -417,6 +429,10 @@ input FinancialBeingWhereInput {
   createdAt_gt: DateTime
   createdAt_gte: DateTime
   parent: FinancialBeingWhereInput
+  owner: MemberWhereInput
+  admins_every: MemberWhereInput
+  admins_some: MemberWhereInput
+  admins_none: MemberWhereInput
   AND: [FinancialBeingWhereInput!]
   OR: [FinancialBeingWhereInput!]
   NOT: [FinancialBeingWhereInput!]
@@ -452,6 +468,16 @@ input MemberCreateInput {
   authId: String!
   visible: Boolean
   status: MemberStatusCreateManyInput
+}
+
+input MemberCreateManyInput {
+  create: [MemberCreateInput!]
+  connect: [MemberWhereUniqueInput!]
+}
+
+input MemberCreateOneInput {
+  create: MemberCreateInput
+  connect: MemberWhereUniqueInput
 }
 
 input MemberCreateOneWithoutTeamsInput {
@@ -616,12 +642,36 @@ input MemberSubscriptionWhereInput {
   NOT: [MemberSubscriptionWhereInput!]
 }
 
+input MemberUpdateDataInput {
+  alias: String
+  teams: TeamMembersUpdateManyWithoutMemberInput
+  authId: String
+  visible: Boolean
+  status: MemberStatusUpdateManyInput
+}
+
 input MemberUpdateInput {
   alias: String
   teams: TeamMembersUpdateManyWithoutMemberInput
   authId: String
   visible: Boolean
   status: MemberStatusUpdateManyInput
+}
+
+input MemberUpdateManyInput {
+  create: [MemberCreateInput!]
+  update: [MemberUpdateWithWhereUniqueNestedInput!]
+  upsert: [MemberUpsertWithWhereUniqueNestedInput!]
+  delete: [MemberWhereUniqueInput!]
+  connect: [MemberWhereUniqueInput!]
+  disconnect: [MemberWhereUniqueInput!]
+}
+
+input MemberUpdateOneRequiredInput {
+  create: MemberCreateInput
+  update: MemberUpdateDataInput
+  upsert: MemberUpsertNestedInput
+  connect: MemberWhereUniqueInput
 }
 
 input MemberUpdateOneWithoutTeamsInput {
@@ -640,9 +690,25 @@ input MemberUpdateWithoutTeamsDataInput {
   status: MemberStatusUpdateManyInput
 }
 
+input MemberUpdateWithWhereUniqueNestedInput {
+  where: MemberWhereUniqueInput!
+  data: MemberUpdateDataInput!
+}
+
+input MemberUpsertNestedInput {
+  update: MemberUpdateDataInput!
+  create: MemberCreateInput!
+}
+
 input MemberUpsertWithoutTeamsInput {
   update: MemberUpdateWithoutTeamsDataInput!
   create: MemberCreateWithoutTeamsInput!
+}
+
+input MemberUpsertWithWhereUniqueNestedInput {
+  where: MemberWhereUniqueInput!
+  update: MemberUpdateDataInput!
+  create: MemberCreateInput!
 }
 
 input MemberWhereInput {

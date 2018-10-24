@@ -3,7 +3,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const graphqlHTTP = require('express-graphql');
-const {schema} = require('./server/controller');
+const {schema} = require('./src/controller');
 
 const {
   Prisma,
@@ -11,14 +11,14 @@ const {
   forwardTo
 } = require('prisma-binding');
 
-const {resolvers} = require('./server/controller');
+const {resolvers} = require('./src/controller');
 const {
   checkJwt
-} = require('./server/auth/middleware/jwt');
+} = require('./src/auth/middleware/jwt');
 
 const {
   validateJWT
-} = require('./server/auth/validateJWT');
+} = require('./src/auth/validateJWT');
 
 const app = express();
 
@@ -40,7 +40,7 @@ app.use('/graphql', graphqlHTTP(async req => ({
   context: {
     db: db,
     req: req,
-    jwt: await validateJWT(req.cookies['Authorization'])
+    userID: req.headers.userid
   }
 })));
 
