@@ -199,7 +199,7 @@ async function getCurrentMember(token) {
 async function getTeamByID(teamId, token) {
   try {
     client.options.headers = {
-      Authorization: token
+      Authorization: `Bearer ${process.env.TOKEN}`
     };
     
     const query = `

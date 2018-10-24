@@ -34,8 +34,22 @@ type Mutation {
         name: String,
         slug: String,
         avatar: String,
-        teamID: String,
         status: Status,
-        parent: String,
+        reason: String,
+    ): FinancialBeing
+
+    removeFinancialBeingFromTeam(
+        id: String!
+        teamId: String!
+    ): FinancialBeing
+
+    addFinancialBeingAdmin(
+        id: String!,
+        adminId: String!
+    ): FinancialBeing
+
+    removeFinancialBeingAdmin(
+        id: String!,
+        adminId: String!
     ): FinancialBeing
 }

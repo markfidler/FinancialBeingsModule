@@ -1,16 +1,25 @@
 'use strict';
+
+/**
+ * Controller module
+ * @module src/controller
+ */
+
 require('dotenv').config();
 
-const _ = require('lodash');
 
+// External modules
+const _ = require('lodash');
 const jwt = require('jsonwebtoken');
 const {GraphQLError} = require('graphql');
 const {importSchema} = require('graphql-import');
 const {makeExecutableSchema} = require('graphql-tools');
+const slugify = require('slugify');
 
+// Internal modules
 const {logger} = require('./utils');
+const {checkOwnership} = require('./service');
 const {getAllTeams} = require('./gateways/teams');
-
 const BEINGS_FRAGMENT = require('./db/graphql/BeingsFragment');
 
 
@@ -156,6 +165,7 @@ const resolvers = {
      * Mutation function - try to create Financial Being
      *
      * @param {Object} parent - Returned result from previous functions execution
+     *
      * @param {Object!} args - GraphQL parameters required for function execution
      * @param {Enumerator!} args.type - Financial being type (see ./db/datamodel)
      * @param {Enumerator!} args.kind - Financial being kind (see ./db/datamodel)
@@ -165,10 +175,12 @@ const resolvers = {
      * @param {String!} args.teamID - ID of owning team (financial being creator)
      * @param {Object!} args.status - Status of the FBeing (defaults to inactive)
      * @param {String} args.parent - Financial Being this being was forked out of
+     *
      * @param {Object!} ctx - Function execution context enriched with new params
      * @param {Object} ctx.db - DB ob with closure functions for Prisma interface
      * @param {Object} ctx.req - HTTPS request object passed from the API gateway
      * @param {Object} info - info contains the query AST and more execution info
+     *
      * @return {Object!} GraphQL Query response - BEINGS_FRAGMENT is the template
      */
     async createFinancialBeing(parent, args, ctx, info) {
@@ -182,25 +194,33 @@ const resolvers = {
         // without properly checking the user first (and its access rights)
         // For now, we'll just use the data from which we received from JWT
         
+        const currentTime = Math.floor(Date.now() / 1000);
+        
         const data = {
           type: args.type,
           kind: args.kind,
           name: args.name,
-          slug: args.slug,
-          // avatar: args.avatar,
+          slug: slugify(args.name),
+          avatar: args.avatar,
           owner: owner,
-          admins: [
-            owner
-          ],
-          createdOn: Math.floor(Date.now() / 1000),
-          updatedOn: Math.floor(Date.now() / 1000)
+          admin: {
+            set: owner
+          },
+          status: {
+            create: {
+              status: args.status,
+              reason: args.reason,
+              createdOn: currentTime
+            }
+          },
+          createdOn: currentTime,
+          updatedOn: currentTime
         };
         
         
         if (args.teamID) {
           // TODO@cordo-van-saviour: change this when API starts working again
           // let teams = await getTeamByID(args.teamID, ctx.req.cookies['Authorization']);
-          
           let allTeams = await getAllTeams();
           
           allTeams = _.filter(allTeams.teams.edges, e => {
@@ -249,11 +269,14 @@ const resolvers = {
         throw e;
       }
     },
+    
     /**
      * Mutation function - try to update Financial Being
      *
      * @param {Object} parent - Returned result from previous functions execution
+     *
      * @param {Object!} args - GraphQL parameters required for function execution
+     * @param {String!} args.id - Identifier of Financial Being we want to update
      * @param {Enumerator!} args.type - Financial being type (see ./db/datamodel)
      * @param {Enumerator!} args.kind - Financial being kind (see ./db/datamodel)
      * @param {String!} args.name - Name of the financial being we want to create
@@ -262,38 +285,38 @@ const resolvers = {
      * @param {String!} args.teamID - ID of owning team (financial being creator)
      * @param {Object!} args.status - Status of the FBeing (defaults to inactive)
      * @param {String} args.parent - Financial Being this being was forked out of
+     *
      * @param {Object!} ctx - Function execution context enriched with new params
      * @param {Object} ctx.db - DB ob with closure functions for Prisma interface
      * @param {Object} ctx.req - HTTPS request object passed from the API gateway
      * @param {Object} info - info contains the query AST and more execution info
+     *
      * @return {Object!} GraphQL Query response - BEINGS_FRAGMENT is the template
      */
     async updateFinancialBeing(parent, args, ctx, info) {
       try {
         
-        const owner = ctx.userid;
+        // const owner = ctx.userid;
         
-        const getFinancialBeing = await resolvers.Query.financialBeingsByID(parent, {id: args.id}, ctx, info);
-        let isSenderOwner = getFinancialBeing[0].financialBeing.members;
-        isSenderOwner = _.filter(isSenderOwner, owner);
+        let owner = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+        owner = owner.sub.split('|')[1];
         
-        if (getFinancialBeing.length < 1 || !isSenderOwner) {
-          logger.log('error', 'Tried to update somebody else\'s financial being!');
-          throw new GraphQLError('Unauthorized');
-        }
+        const returnedFinancialBeing = await checkOwnership(owner, args.id, ctx);
         
         const data = {
-          type: args.type,
-          kind: args.kind,
-          name: args.name,
-          slug: args.slug,
-          avatar: args.avatar,
-          status: args.status,
+          type: args.type | returnedFinancialBeing.type,
+          kind: args.kind | returnedFinancialBeing.kind,
+          name: args.name | returnedFinancialBeing.name,
+          slug: slugify(args.name) | returnedFinancialBeing.slug,
+          avatar: args.avatar | returnedFinancialBeing.avatar,
+          status: {
+            create: {
+              status: args.status | returnedFinancialBeing.status.status,
+              reason: args.reason | returnedFinancialBeing.status.reason
+            }
+          },
           updatedAt: Math.floor(Date.now() / 1000),
-          owner: owner,
-          admins: [
-            owner
-          ]
+          owner: owner
         };
         
         if (args.teamID) {
@@ -347,7 +370,86 @@ const resolvers = {
         
         throw e;
       }
+    },
+    
+    /**
+     * Mutation function - try to remove the Financial Being from the team
+     *
+     * @param {Object} parent - Returned result from previous functions execution
+     *
+     * @param {Object!} args - GraphQL parameters required for function execution
+     * @param {String!} args.id - Identifier of Financial Being we want to remove
+     * @param {String!} args.teamId - Identifier of the Team we want to remove FB
+     *
+     * @param {Object!} ctx - Function execution context enriched with new params
+     * @param {Object} ctx.db - DB ob with closure functions for Prisma interface
+     * @param {Object} ctx.req - HTTPS request object passed from the API gateway
+     * @param {Object} info - info contains the query AST and more execution info
+     *
+     * @return {Object!} GraphQL Query response - BEINGS_FRAGMENT is the template
+     */
+    async removeFinancialBeingFromTeam(parent, args, ctx, info) {
+      // Only financial being owner can remove it from the team
+      // const owner = ctx.userid;
+      
+      let owner = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+      owner = owner.sub.split('|')[1];
+      await checkOwnership(owner, args.id, ctx);
+      
+    },
+    
+    /**
+     * Mutation function - try to add the new Financial Being administrator
+     *
+     * @param {Object} parent - Returned result from previous functions execution
+     *
+     * @param {Object!} args - GraphQL parameters required for function execution
+     * @param {String!} args.id - Identifier of Financial Being we want to mutate
+     * @param {String!} args.adminId - ID of the Admin we want to add to FinBeing
+     *
+     * @param {Object!} ctx - Function execution context enriched with new params
+     * @param {Object} ctx.db - DB ob with closure functions for Prisma interface
+     * @param {Object} ctx.req - HTTPS request object passed from the API gateway
+     * @param {Object} info - info contains the query AST and more execution info
+     *
+     * @return {Object!} GraphQL Query response - BEINGS_FRAGMENT is the template
+     */
+    async addFinancialBeingAdmin(parent, args, ctx, info) {
+      // Only financial being owner can add admin to the financial being
+      // const owner = ctx.userid;
+      
+      let owner = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+      owner = owner.sub.split('|')[1];
+      await checkOwnership(owner, args.id, ctx);
+      
+    },
+    
+    /**
+     * Mutation function - try to remove one of Financial Being administrators
+     *
+     * @param {Object} parent - Returned result from previous functions execution
+     *
+     * @param {Object!} args - GraphQL parameters required for function execution
+     * @param {String!} args.id - ID of the FinBeing we want to remove Admin from
+     * @param {String!} args.adminId - ID of the Admin we actually want to remove
+     *
+     * @param {Object!} ctx - Function execution context enriched with new params
+     * @param {Object} ctx.db - DB ob with closure functions for Prisma interface
+     * @param {Object} ctx.req - HTTPS request object passed from the API gateway
+     * @param {Object} info - info contains the query AST and more execution info
+     *
+     * @return {Object!} GraphQL Query response - BEINGS_FRAGMENT is the template
+     */
+    async removeFinancialBeingAdmin(parent, args, ctx, info) {
+      // Only financial being owner can remove admin from financial being
+      // const owner = ctx.userid;
+      
+      let owner = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+      owner = owner.sub.split('|')[1];
+      await checkOwnership(owner, args.id, ctx);
+      
     }
+    
   }
 };
 
