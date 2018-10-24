@@ -12,13 +12,6 @@ const {
 } = require('prisma-binding');
 
 const {resolvers} = require('./src/controller');
-const {
-  checkJwt
-} = require('./src/auth/middleware/jwt');
-
-const {
-  validateJWT
-} = require('./src/auth/validateJWT');
 
 const app = express();
 
@@ -28,7 +21,7 @@ app.use(cookieParser());
 
 const db = new Prisma({
   fragmentReplacements: extractFragmentReplacements(resolvers),
-  typeDefs: './server/db/generated/prisma.graphql',
+  typeDefs: './src/db/generated/prisma.graphql',
   endpoint: 'http://localhost:4466',
   // secret: process.env.PRISMA_SECRET,
   debug: true

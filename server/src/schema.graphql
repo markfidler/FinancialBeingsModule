@@ -6,8 +6,6 @@ directive @isOwner(type: String) on QUERY | MUTATION
 directive @isOwnerOrHasRole(type: String, roles: [String]) on QUERY | MUTATION
 
 type Query {
-    teamByName(name: String!): Team
-    teamsByOwner(ownerId: String!): [Team!]
     financialBeings: [FinancialBeing]
     financialBeingsByName(name: String!): [FinancialBeing]
     financialBeingsByID(id: ID!): [FinancialBeing]
@@ -17,7 +15,27 @@ type Query {
 }
 
 type Mutation {
-    authenticate(idToken: String!): Member
-    createFinancialBeing(name: String!, slug: String!, type: FBType!, kind: FBKind!, parentID: String, teamID: String): FinancialBeing
-    updateFinancialBeing(name: String!, slug: String!, type: FBType!, kind: FBKind!, parentID: String, teamID: String): FinancialBeing
+    createFinancialBeing(
+        type: FBType!,
+        kind: FBKind!,
+        name: String!,
+        slug: String!,
+        avatar: String,
+        teamID: String!,
+        status: Status,
+        reason: String,
+        parent: String,
+    ): FinancialBeing
+
+    updateFinancialBeing(
+        id: String!,
+        type: FBType,
+        kind: FBKind,
+        name: String,
+        slug: String,
+        avatar: String,
+        teamID: String,
+        status: Status,
+        parent: String,
+    ): FinancialBeing
 }
