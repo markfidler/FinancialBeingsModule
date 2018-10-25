@@ -18,7 +18,7 @@ const slugify = require('slugify');
 
 // Internal modules
 const {logger} = require('./utils');
-const {checkOwnership} = require('./service');
+const {checkOwnership, checkTeamOwnership, checkFinancialBeingOwnership, removeFalseyValues} = require('./service');
 const {getAllTeams} = require('./gateways/teams');
 const BEINGS_FRAGMENT = require('./db/graphql/BeingsFragment');
 
@@ -185,10 +185,9 @@ const resolvers = {
      */
     async createFinancialBeing(parent, args, ctx, info) {
       try {
-        // TODO@cordo-van-saviour: change this when API starts working again
-        // const owner = ctx.userid;
-        let owner = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
-        owner = owner.sub.split('|')[1];
+        // const messageSender = ctx.userid;
+        let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+        messageSender = messageSender.sub.split('|')[1];
         
         // That means we need to verify the JWT, since we can't just add FB
         // without properly checking the user first (and its access rights)
@@ -202,9 +201,11 @@ const resolvers = {
           name: args.name,
           slug: slugify(args.name),
           avatar: args.avatar,
-          owner: owner,
-          admin: {
-            set: owner
+          owner: messageSender,
+          admins: {
+            create: {
+              adminId: messageSender
+            }
           },
           status: {
             create: {
@@ -229,7 +230,7 @@ const resolvers = {
               
               return _.filter(allTeams.teams.members, e => {
                 
-                return e.authId.split('|')[1] === owner;
+                return e.authId.split('|')[1] === messageSender;
               });
             }
           });
@@ -296,28 +297,32 @@ const resolvers = {
     async updateFinancialBeing(parent, args, ctx, info) {
       try {
         
-        // const owner = ctx.userid;
+        // const messageSender = ctx.userid;
         
-        let owner = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
-        owner = owner.sub.split('|')[1];
+        let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+        messageSender = messageSender.sub.split('|')[1];
         
-        const returnedFinancialBeing = await checkOwnership(owner, args.id, ctx);
+        await checkOwnership(messageSender, args.id, ctx);
         
-        const data = {
-          type: args.type | returnedFinancialBeing.type,
-          kind: args.kind | returnedFinancialBeing.kind,
-          name: args.name | returnedFinancialBeing.name,
-          slug: slugify(args.name) | returnedFinancialBeing.slug,
-          avatar: args.avatar | returnedFinancialBeing.avatar,
+        let data = {
+          type: args.type,
+          kind: args.kind,
+          name: args.name,
+          slug: slugify(args.name),
+          avatar: args.avatar,
           status: {
             create: {
-              status: args.status | returnedFinancialBeing.status.status,
-              reason: args.reason | returnedFinancialBeing.status.reason
+              status: args.status,
+              reason: args.reason
             }
           },
-          updatedAt: Math.floor(Date.now() / 1000),
-          owner: owner
+          updatedOn: Math.floor(Date.now() / 1000)
         };
+        
+        // filter out the unnecessary fields
+        data.status.create = removeFalseyValues(data.status.create);
+        data.status = _.isEmpty(data.status);
+        data = removeFalseyValues(data);
         
         if (args.teamID) {
           // TODO@cordo-van-saviour: change this when API starts working again
@@ -331,7 +336,7 @@ const resolvers = {
               
               return _.filter(allTeams.teams.members, e => {
                 
-                return e.authId.split('|')[1] === owner;
+                return e.authId.split('|')[1] === messageSender;
               });
             }
           });
@@ -358,7 +363,8 @@ const resolvers = {
         }
         
         // now call the create function
-        return await ctx.db.mutation.createFinancialBeing({
+        return await ctx.db.mutation.updateFinancialBeing({
+          where: {id: args.id},
           data: data
         }, BEINGS_FRAGMENT);
         
@@ -390,11 +396,11 @@ const resolvers = {
      */
     async removeFinancialBeingFromTeam(parent, args, ctx, info) {
       // Only financial being owner can remove it from the team
-      // const owner = ctx.userid;
+      // const messageSender = ctx.userid;
       
-      let owner = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
-      owner = owner.sub.split('|')[1];
-      await checkOwnership(owner, args.id, ctx);
+      let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+      messageSender = messageSender.sub.split('|')[1];
+      await checkOwnership(messageSender, args.id, ctx);
       
     },
     
@@ -416,11 +422,22 @@ const resolvers = {
      */
     async addFinancialBeingAdmin(parent, args, ctx, info) {
       // Only financial being owner can add admin to the financial being
-      // const owner = ctx.userid;
+      // const messageSender = ctx.userid;
       
-      let owner = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
-      owner = owner.sub.split('|')[1];
-      await checkOwnership(owner, args.id, ctx);
+      let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+      messageSender = messageSender.sub.split('|')[1];
+      
+      const financialBeing = await checkFinancialBeingOwnership(messageSender, args.id, ctx);
+      
+      const invalidToAdd = _.filter(financialBeing.admins, e => {
+        return e.adminId === args.adminId;
+      });
+      
+      if (invalidToAdd.length > 0) {
+        throw new GraphQLError('');
+      }
+      
+      console.log('end');
       
     },
     
@@ -442,11 +459,11 @@ const resolvers = {
      */
     async removeFinancialBeingAdmin(parent, args, ctx, info) {
       // Only financial being owner can remove admin from financial being
-      // const owner = ctx.userid;
+      // const messageSender = ctx.userid;
       
-      let owner = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
-      owner = owner.sub.split('|')[1];
-      await checkOwnership(owner, args.id, ctx);
+      let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+      messageSender = messageSender.sub.split('|')[1];
+      await checkOwnership(messageSender, args.id, ctx);
       
     }
     

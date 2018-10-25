@@ -16,6 +16,10 @@ const BEINGS_FRAGMENT = gql`{
     createdOn
     team
     parent
+    owner
+    admins {
+        adminId
+    }
 }`;
 
 module.exports = BEINGS_FRAGMENT;
