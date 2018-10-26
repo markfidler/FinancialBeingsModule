@@ -16,7 +16,7 @@ const BEINGS_FRAGMENT = gql`{
     createdOn
     team
     parent
-    owner
+    creator
     admins {
         adminId
     }

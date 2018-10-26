@@ -35,7 +35,7 @@ type FinancialBeing {
     updatedOn: Int!
     createdOn: Int!
     parent: String
-    owner: String!
+    creator: String!
     admins: [Admin!]!
 }
 

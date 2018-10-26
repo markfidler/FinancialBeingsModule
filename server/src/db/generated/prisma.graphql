@@ -244,7 +244,7 @@ type FinancialBeing {
   updatedOn: Int!
   createdOn: Int!
   parent: String
-  owner: String!
+  creator: String!
   admins(where: AdminWhereInput, orderBy: AdminOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Admin!]
 }
 
@@ -265,7 +265,7 @@ input FinancialBeingCreateInput {
   updatedOn: Int!
   createdOn: Int!
   parent: String
-  owner: String!
+  creator: String!
   admins: AdminCreateManyInput
 }
 
@@ -295,8 +295,8 @@ enum FinancialBeingOrderByInput {
   createdOn_DESC
   parent_ASC
   parent_DESC
-  owner_ASC
-  owner_DESC
+  creator_ASC
+  creator_DESC
   createdAt_ASC
   createdAt_DESC
   updatedAt_ASC
@@ -314,7 +314,7 @@ type FinancialBeingPreviousValues {
   updatedOn: Int!
   createdOn: Int!
   parent: String
-  owner: String!
+  creator: String!
 }
 
 type FinancialBeingSubscriptionPayload {
@@ -346,7 +346,7 @@ input FinancialBeingUpdateInput {
   updatedOn: Int
   createdOn: Int
   parent: String
-  owner: String
+  creator: String
   admins: AdminUpdateManyInput
 }
 
@@ -460,20 +460,20 @@ input FinancialBeingWhereInput {
   parent_not_starts_with: String
   parent_ends_with: String
   parent_not_ends_with: String
-  owner: String
-  owner_not: String
-  owner_in: [String!]
-  owner_not_in: [String!]
-  owner_lt: String
-  owner_lte: String
-  owner_gt: String
-  owner_gte: String
-  owner_contains: String
-  owner_not_contains: String
-  owner_starts_with: String
-  owner_not_starts_with: String
-  owner_ends_with: String
-  owner_not_ends_with: String
+  creator: String
+  creator_not: String
+  creator_in: [String!]
+  creator_not_in: [String!]
+  creator_lt: String
+  creator_lte: String
+  creator_gt: String
+  creator_gte: String
+  creator_contains: String
+  creator_not_contains: String
+  creator_starts_with: String
+  creator_not_starts_with: String
+  creator_ends_with: String
+  creator_not_ends_with: String
   admins_every: AdminWhereInput
   admins_some: AdminWhereInput
   admins_none: AdminWhereInput

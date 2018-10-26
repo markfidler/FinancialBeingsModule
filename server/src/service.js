@@ -10,7 +10,7 @@
 const _ = require('lodash');
 const {logger} = require('./utils');
 const {GraphQLError} = require('graphql');
-const BEINGS_FRAGMENT = require('./db/graphql/BeingsFragment');
+const BEINGS_FRAGMENT = require('./db/BeingsFragment');
 const {getTeamByID, getAllTeams} = require('./gateways/teams');
 
 /**

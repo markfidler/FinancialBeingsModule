@@ -20,8 +20,7 @@ const slugify = require('slugify');
 const {logger} = require('./utils');
 const {checkOwnership, checkTeamOwnership, checkFinancialBeingOwnership, removeFalseyValues} = require('./service');
 const {getAllTeams} = require('./gateways/teams');
-const BEINGS_FRAGMENT = require('./db/graphql/BeingsFragment');
-
+const BEINGS_FRAGMENT = require('./db/BeingsFragment');
 
 const resolvers = {
   Query: {
@@ -201,7 +200,7 @@ const resolvers = {
           name: args.name,
           slug: slugify(args.name),
           avatar: args.avatar,
-          owner: messageSender,
+          creator: messageSender,
           admins: {
             create: {
               adminId: messageSender
@@ -302,7 +301,7 @@ const resolvers = {
         let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
         messageSender = messageSender.sub.split('|')[1];
         
-        await checkOwnership(messageSender, args.id, ctx);
+        await checkFinancialBeingOwnership(messageSender, args.id, ctx);
         
         let data = {
           type: args.type,
