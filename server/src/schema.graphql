@@ -43,6 +43,11 @@ type Mutation {
         teamId: String!
     ): FinancialBeing
 
+    addFinancialBeingToTeam(
+        id: String!
+        teamId: String!
+    ): FinancialBeing
+
     addFinancialBeingAdmin(
         id: String!,
         adminId: String!

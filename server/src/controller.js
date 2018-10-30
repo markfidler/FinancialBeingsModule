@@ -18,7 +18,13 @@ const slugify = require('slugify');
 
 // Internal modules
 const {logger} = require('./utils');
-const {checkOwnership, checkTeamOwnership, checkFinancialBeingOwnership, removeFalseyValues} = require('./service');
+const {
+  checkOwnership,
+  checkTeamOwnership,
+  checkFinancialBeingOwnership,
+  removeFalseyValues,
+  checkTeamMembership
+} = require('./service');
 const {getAllTeams} = require('./gateways/teams');
 const BEINGS_FRAGMENT = require('./db/BeingsFragment');
 
@@ -171,7 +177,7 @@ const resolvers = {
      * @param {String!} args.name - Name of the financial being we want to create
      * @param {String!} args.slug - Slug of the financial being we want to create
      * @param {String} args.avatar - Image URL used for avatar of financial being
-     * @param {String!} args.teamID - ID of owning team (financial being creator)
+     * @param {String!} args.teamId - ID of owning team (financial being creator)
      * @param {Object!} args.status - Status of the FBeing (defaults to inactive)
      * @param {String} args.parent - Financial Being this being was forked out of
      *
@@ -218,14 +224,14 @@ const resolvers = {
         };
         
         
-        if (args.teamID) {
+        if (args.teamId) {
           // TODO@cordo-van-saviour: change this when API starts working again
-          // let teams = await getTeamByID(args.teamID, ctx.req.cookies['Authorization']);
+          // let teams = await getTeamByID(args.teamId, ctx.req.cookies['Authorization']);
           let allTeams = await getAllTeams();
           
           allTeams = _.filter(allTeams.teams.edges, e => {
             
-            if (e.node.id === args.teamID) {
+            if (e.node.id === args.teamId) {
               
               return _.filter(allTeams.teams.members, e => {
                 
@@ -282,7 +288,7 @@ const resolvers = {
      * @param {String!} args.name - Name of the financial being we want to create
      * @param {String!} args.slug - Slug of the financial being we want to create
      * @param {String} args.avatar - Image URL used for avatar of financial being
-     * @param {String!} args.teamID - ID of owning team (financial being creator)
+     * @param {String!} args.teamId - ID of owning team (financial being creator)
      * @param {Object!} args.status - Status of the FBeing (defaults to inactive)
      * @param {String} args.parent - Financial Being this being was forked out of
      *
@@ -297,7 +303,6 @@ const resolvers = {
       try {
         
         // const messageSender = ctx.userid;
-        
         let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
         messageSender = messageSender.sub.split('|')[1];
         
@@ -323,15 +328,15 @@ const resolvers = {
         data.status = _.isEmpty(data.status);
         data = removeFalseyValues(data);
         
-        if (args.teamID) {
+        if (args.teamId) {
           // TODO@cordo-van-saviour: change this when API starts working again
-          // let teams = await getTeamByID(args.teamID, ctx.req.cookies['Authorization']);
+          // let teams = await getTeamByID(args.teamId, ctx.req.cookies['Authorization']);
           
           let allTeams = await getAllTeams();
           
           allTeams = _.filter(allTeams.teams.edges, e => {
             
-            if (e.node.id === args.teamID) {
+            if (e.node.id === args.teamId) {
               
               return _.filter(allTeams.teams.members, e => {
                 
@@ -399,8 +404,56 @@ const resolvers = {
       
       let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
       messageSender = messageSender.sub.split('|')[1];
-      await checkOwnership(messageSender, args.id, ctx);
+      const isTeamOwner = await checkTeamOwnership(messageSender, args.teamId, ctx);
       
+      if (!isTeamOwner) {
+        throw new GraphQLError('Unauthorized');
+      }
+      
+      return await ctx.db.mutation.updateFinancialBeing({
+        where: {id: args.id},
+        data: {team: ''}
+      }, BEINGS_FRAGMENT);
+    },
+    
+    /**
+     * Mutation function - try to attach the Financial Being to the new team
+     *
+     * @param {Object} parent - Returned result from previous functions execution
+     *
+     * @param {Object!} args - GraphQL parameters required for function execution
+     * @param {String!} args.id - Identifier of Financial Being we want to remove
+     * @param {String!} args.teamId - Identifier of the Team we want to remove FB
+     *
+     * @param {Object!} ctx - Function execution context enriched with new params
+     * @param {Object} ctx.db - DB ob with closure functions for Prisma interface
+     * @param {Object} ctx.req - HTTPS request object passed from the API gateway
+     * @param {Object} info - info contains the query AST and more execution info
+     *
+     * @return {Object!} GraphQL Query response - BEINGS_FRAGMENT is the template
+     */
+    async addFinancialBeingToTeam(parent, args, ctx, info) {
+      // Only financial being owner can remove it from the team
+      // const messageSender = ctx.userid;
+      
+      let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+      messageSender = messageSender.sub.split('|')[1];
+      const isTeamMember = await checkTeamMembership(messageSender, args.teamId, ctx);
+      
+      if (!isTeamMember) {
+        throw new GraphQLError('Unauthorized');
+      }
+      
+      const isBeingOwner = await checkFinancialBeingOwnership(messageSender, args.id, ctx);
+  
+      if (!isBeingOwner) {
+        throw new GraphQLError('Unauthorized');
+      }
+      
+      return await ctx.db.mutation.updateFinancialBeing({
+        where: {id: args.id},
+        data: {team: args.teamId}
+      }, BEINGS_FRAGMENT);
     },
     
     /**
@@ -428,16 +481,15 @@ const resolvers = {
       
       const financialBeing = await checkFinancialBeingOwnership(messageSender, args.id, ctx);
       
-      const invalidToAdd = _.filter(financialBeing.admins, e => {
+      const adminAlreadyExists = _.filter(financialBeing.admins, e => {
         return e.adminId === args.adminId;
       });
       
-      if (invalidToAdd.length > 0) {
+      if (adminAlreadyExists.length > 0) {
         throw new GraphQLError('');
       }
       
       console.log('end');
-      
     },
     
     /**
