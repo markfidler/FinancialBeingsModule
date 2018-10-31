@@ -7,8 +7,7 @@ const {schema} = require('./src/controller');
 
 const {
   Prisma,
-  extractFragmentReplacements,
-  forwardTo
+  extractFragmentReplacements
 } = require('prisma-binding');
 
 const {resolvers} = require('./src/controller');
