@@ -19,6 +19,7 @@ const BEINGS_FRAGMENT = gql`{
     creator
     admins {
         adminId
+        financialBeingId
     }
 }`;
 

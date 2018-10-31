@@ -19,13 +19,12 @@ const slugify = require('slugify');
 // Internal modules
 const {logger} = require('./utils');
 const {
-  checkOwnership,
   checkTeamOwnership,
+  checkTeamMembership,
   checkFinancialBeingOwnership,
-  removeFalseyValues,
-  checkTeamMembership
+  removeFalseyValues
 } = require('./service');
-const {getAllTeams} = require('./gateways/teams');
+
 const BEINGS_FRAGMENT = require('./db/BeingsFragment');
 
 const resolvers = {
@@ -207,11 +206,6 @@ const resolvers = {
           slug: slugify(args.name),
           avatar: args.avatar,
           creator: messageSender,
-          admins: {
-            create: {
-              adminId: messageSender
-            }
-          },
           status: {
             create: {
               status: args.status,
@@ -227,30 +221,19 @@ const resolvers = {
         if (args.teamId) {
           // TODO@cordo-van-saviour: change this when API starts working again
           // let teams = await getTeamByID(args.teamId, ctx.req.cookies['Authorization']);
-          let allTeams = await getAllTeams();
           
-          allTeams = _.filter(allTeams.teams.edges, e => {
-            
-            if (e.node.id === args.teamId) {
-              
-              return _.filter(allTeams.teams.members, e => {
-                
-                return e.authId.split('|')[1] === messageSender;
-              });
-            }
-          });
+          const team = await checkTeamMembership(messageSender, args.teamId);
           
-          if (allTeams.length < 1) {
-            logger.log({level: 'warn', message: 'Provided team doesn\'t exist!'});
-            throw new GraphQLError('Provided team doesn\'t exist!');
+          if (!team) {
+            throw new GraphQLError('Could not add non-existing team ID');
           }
           
-          data.team = allTeams[0].node.id;
+          data.team = args.teamId;
         }
         
-        if (args.parentID) {
+        if (args.parent) {
           const parentFinancialBeing = await resolvers.Query.financialBeingsByID(parent, {
-            id: args.parentID
+            id: args.parent
           }, ctx, info);
           
           if (parentFinancialBeing.length < 1) {
@@ -328,34 +311,10 @@ const resolvers = {
         data.status = _.isEmpty(data.status);
         data = removeFalseyValues(data);
         
-        if (args.teamId) {
-          // TODO@cordo-van-saviour: change this when API starts working again
-          // let teams = await getTeamByID(args.teamId, ctx.req.cookies['Authorization']);
-          
-          let allTeams = await getAllTeams();
-          
-          allTeams = _.filter(allTeams.teams.edges, e => {
-            
-            if (e.node.id === args.teamId) {
-              
-              return _.filter(allTeams.teams.members, e => {
-                
-                return e.authId.split('|')[1] === messageSender;
-              });
-            }
-          });
-          
-          if (allTeams.length < 1) {
-            logger.log({level: 'warn', message: 'Provided team doesn\'t exist!'});
-            throw new GraphQLError('Provided team doesn\'t exist!');
-          }
-          
-          data.team = allTeams[0].id;
-        }
         
-        if (args.parentID) {
+        if (args.parent) {
           const parentFinancialBeing = await resolvers.Query.financialBeingsByID(parent, {
-            id: args.parentID
+            id: args.parent
           }, ctx, info);
           
           if (parentFinancialBeing.length < 1) {
@@ -399,21 +358,33 @@ const resolvers = {
      * @return {Object!} GraphQL Query response - BEINGS_FRAGMENT is the template
      */
     async removeFinancialBeingFromTeam(parent, args, ctx, info) {
-      // Only financial being owner can remove it from the team
-      // const messageSender = ctx.userid;
       
-      let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
-      messageSender = messageSender.sub.split('|')[1];
-      const isTeamOwner = await checkTeamOwnership(messageSender, args.teamId, ctx);
-      
-      if (!isTeamOwner) {
-        throw new GraphQLError('Unauthorized');
+      try {
+        // Only financial being owner can remove it from the team
+        // const messageSender = ctx.userid;
+        
+        let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+        messageSender = messageSender.sub.split('|')[1];
+        const isTeamOwner = await checkTeamOwnership(messageSender, args.teamId, ctx);
+        
+        if (!isTeamOwner) {
+          throw new GraphQLError('Unauthorized');
+        }
+        
+        return await ctx.db.mutation.updateFinancialBeing({
+          where: {id: args.id},
+          data: {team: ''}
+        }, BEINGS_FRAGMENT);
+        
+      } catch (e) {
+        
+        if (e.__proto__.name !== 'GraphQLError') {
+          logger.log({level: 'error', message: e.message});
+          throw new GraphQLError('Something went wrong while creating financial being!');
+        }
+        
+        throw e;
       }
-      
-      return await ctx.db.mutation.updateFinancialBeing({
-        where: {id: args.id},
-        data: {team: ''}
-      }, BEINGS_FRAGMENT);
     },
     
     /**
@@ -433,27 +404,40 @@ const resolvers = {
      * @return {Object!} GraphQL Query response - BEINGS_FRAGMENT is the template
      */
     async addFinancialBeingToTeam(parent, args, ctx, info) {
-      // Only financial being owner can remove it from the team
-      // const messageSender = ctx.userid;
       
-      let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
-      messageSender = messageSender.sub.split('|')[1];
-      const isTeamMember = await checkTeamMembership(messageSender, args.teamId, ctx);
-      
-      if (!isTeamMember) {
-        throw new GraphQLError('Unauthorized');
+      try {
+        // Only financial being owner can remove it from the team
+        // const messageSender = ctx.userid;
+        
+        let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+        messageSender = messageSender.sub.split('|')[1];
+        const isTeamMember = await checkTeamMembership(messageSender, args.teamId, ctx);
+        
+        if (!isTeamMember) {
+          throw new GraphQLError('Unauthorized');
+        }
+        
+        const isBeingOwner = await checkFinancialBeingOwnership(messageSender, args.id, ctx);
+        
+        if (!isBeingOwner) {
+          throw new GraphQLError('Unauthorized');
+        }
+        
+        return await ctx.db.mutation.updateFinancialBeing({
+          where: {id: args.id},
+          data: {team: args.teamId}
+        }, BEINGS_FRAGMENT);
+        
+      } catch (e) {
+        
+        if (e.__proto__.name !== 'GraphQLError') {
+          logger.log({level: 'error', message: e.message});
+          throw new GraphQLError('Something went wrong while creating financial being!');
+        }
+        
+        throw e;
       }
       
-      const isBeingOwner = await checkFinancialBeingOwnership(messageSender, args.id, ctx);
-  
-      if (!isBeingOwner) {
-        throw new GraphQLError('Unauthorized');
-      }
-      
-      return await ctx.db.mutation.updateFinancialBeing({
-        where: {id: args.id},
-        data: {team: args.teamId}
-      }, BEINGS_FRAGMENT);
     },
     
     /**
@@ -473,23 +457,54 @@ const resolvers = {
      * @return {Object!} GraphQL Query response - BEINGS_FRAGMENT is the template
      */
     async addFinancialBeingAdmin(parent, args, ctx, info) {
-      // Only financial being owner can add admin to the financial being
-      // const messageSender = ctx.userid;
       
-      let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
-      messageSender = messageSender.sub.split('|')[1];
-      
-      const financialBeing = await checkFinancialBeingOwnership(messageSender, args.id, ctx);
-      
-      const adminAlreadyExists = _.filter(financialBeing.admins, e => {
-        return e.adminId === args.adminId;
-      });
-      
-      if (adminAlreadyExists.length > 0) {
-        throw new GraphQLError('');
+      try {
+        // Only financial being owner can add admin to the financial being
+        // const messageSender = ctx.userid;
+        
+        let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+        messageSender = messageSender.sub.split('|')[1];
+        
+        const financialBeing = await checkFinancialBeingOwnership(messageSender, args.id, ctx);
+        
+        if (!financialBeing) {
+          throw new GraphQLError('Unauthorized');
+        }
+        
+        const adminAlreadyExists = _.filter(financialBeing.admins, e => {
+          return e.adminId === args.adminId;
+        });
+        
+        if (adminAlreadyExists.length > 0) {
+          throw new GraphQLError('Admin already exists');
+        }
+        
+        const isNewAdminMember = await checkTeamMembership(args.adminId, financialBeing.team);
+        
+        if (!isNewAdminMember) {
+          throw new GraphQLError('Could not add a non-team member to admins list');
+        }
+        
+        return await ctx.db.mutation.updateFinancialBeing({
+          where: {id: args.id},
+          data: {
+            admins: {
+              create: {
+                adminId: args.adminId,
+                financialBeingId: financialBeing.id
+              }
+            }
+          }
+        }, BEINGS_FRAGMENT);
+        
+      } catch (e) {
+        if (e.__proto__.name !== 'GraphQLError') {
+          logger.log({level: 'error', message: e.message});
+          throw new GraphQLError('Something went wrong while creating financial being!');
+        }
+        
+        throw e;
       }
-      
-      console.log('end');
     },
     
     /**
@@ -509,15 +524,36 @@ const resolvers = {
      * @return {Object!} GraphQL Query response - BEINGS_FRAGMENT is the template
      */
     async removeFinancialBeingAdmin(parent, args, ctx, info) {
-      // Only financial being owner can remove admin from financial being
-      // const messageSender = ctx.userid;
-      
-      let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
-      messageSender = messageSender.sub.split('|')[1];
-      await checkOwnership(messageSender, args.id, ctx);
-      
+      try {
+        // Only financial being owner can remove admin from financial being
+        // const messageSender = ctx.userid;
+        
+        let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+        messageSender = messageSender.sub.split('|')[1];
+        const financialBeing = await checkFinancialBeingOwnership(messageSender, args.id, ctx);
+        
+        const adminExists = _.filter(financialBeing.admins, e => {
+          return e.adminId === args.adminId;
+        });
+        
+        if (adminExists.length < 1) {
+          throw new GraphQLError('Admin doesn\'t exist!');
+        }
+        
+        return await ctx.db.mutation.updateFinancialBeing({
+          where: {id: args.id}
+        }, BEINGS_FRAGMENT);
+        
+      } catch (e) {
+        
+        if (e.__proto__.name !== 'GraphQLError') {
+          logger.log({level: 'error', message: e.message});
+          throw new GraphQLError('Something went wrong while creating financial being!');
+        }
+        
+        throw e;
+      }
     }
-    
   }
 };
 

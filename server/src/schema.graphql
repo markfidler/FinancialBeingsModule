@@ -9,7 +9,7 @@ type Query {
     financialBeings: [FinancialBeing]
     financialBeingsByName(name: String!): [FinancialBeing]
     financialBeingsByID(id: ID!): [FinancialBeing]
-    financialBeingsByTeamID(teamID: ID!): [FinancialBeing]
+    financialBeingsByTeamID(teamId: ID!): [FinancialBeing]
     financialBeingsByType(type: FBType!): [FinancialBeing]
     financialBeingsByKind(kind: FBKind!): [FinancialBeing]
 }
@@ -21,7 +21,7 @@ type Mutation {
         name: String!,
         slug: String!,
         avatar: String,
-        teamID: String!,
+        teamId: String!,
         status: Status,
         reason: String,
         parent: String,

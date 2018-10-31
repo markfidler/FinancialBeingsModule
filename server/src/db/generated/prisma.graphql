@@ -1,5 +1,6 @@
 type Admin {
   adminId: String!
+  financialBeingId: String!
 }
 
 type AdminConnection {
@@ -10,6 +11,7 @@ type AdminConnection {
 
 input AdminCreateInput {
   adminId: String!
+  financialBeingId: String!
 }
 
 input AdminCreateManyInput {
@@ -24,6 +26,8 @@ type AdminEdge {
 enum AdminOrderByInput {
   adminId_ASC
   adminId_DESC
+  financialBeingId_ASC
+  financialBeingId_DESC
   id_ASC
   id_DESC
   createdAt_ASC
@@ -34,6 +38,7 @@ enum AdminOrderByInput {
 
 type AdminPreviousValues {
   adminId: String!
+  financialBeingId: String!
 }
 
 type AdminSubscriptionPayload {
@@ -56,6 +61,7 @@ input AdminSubscriptionWhereInput {
 
 input AdminUpdateInput {
   adminId: String
+  financialBeingId: String
 }
 
 input AdminUpdateManyInput {
@@ -77,6 +83,20 @@ input AdminWhereInput {
   adminId_not_starts_with: String
   adminId_ends_with: String
   adminId_not_ends_with: String
+  financialBeingId: String
+  financialBeingId_not: String
+  financialBeingId_in: [String!]
+  financialBeingId_not_in: [String!]
+  financialBeingId_lt: String
+  financialBeingId_lte: String
+  financialBeingId_gt: String
+  financialBeingId_gte: String
+  financialBeingId_contains: String
+  financialBeingId_not_contains: String
+  financialBeingId_starts_with: String
+  financialBeingId_not_starts_with: String
+  financialBeingId_ends_with: String
+  financialBeingId_not_ends_with: String
   AND: [AdminWhereInput!]
   OR: [AdminWhereInput!]
   NOT: [AdminWhereInput!]

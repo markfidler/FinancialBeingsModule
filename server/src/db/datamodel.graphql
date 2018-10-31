@@ -21,6 +21,7 @@ enum FBKind {
 
 type Admin {
     adminId: String!
+    financialBeingId: String!
 }
 
 type FinancialBeing {
