@@ -1,0 +1,28 @@
+{
+  "name": "financial_beings",
+  "version": "0.1.0",
+  "private": false,
+  "scripts": {
+    "start": "node -r dotenv/config ./bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.3",
+    "dotenv": "^6.0.0",
+    "express": "~4.16.0",
+    "express-graphql": "^0.6.12",
+    "graphql": "^14.0.2",
+    "graphql-import": "^0.7.1",
+    "graphql-request": "^1.8.2",
+    "graphql-tag": "^2.10.0",
+    "graphql-tools": "^4.0.0",
+    "jsonwebtoken": "^8.3.0",
+    "lodash": "^4.17.11",
+    "prisma-binding": "^2.1.6",
+    "slugify": "^1.3.1",
+    "winston": "^3.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.6.1",
+    "eslint-config-google": "^0.10.0"
+  }
+}

@@ -1,0 +1,47 @@
+enum Status {
+    ACTIVE
+    INACTIVE
+    APPLIED
+    INVITED
+    REMOVED
+}
+
+enum FBType {
+    BOT
+    NET
+    ADVANCED
+}
+
+enum FBKind {
+    TRADER
+    INDICATOR
+    EXTRACTOR
+    PLOTTER
+}
+
+type Admin {
+    adminId: String!
+    financialBeingId: String!
+}
+
+type FinancialBeing {
+    id: ID! @unique
+    type: FBType!
+    kind: FBKind!
+    name: String! @unique
+    slug: String! @unique
+    avatar: String
+    team: String!
+    status: FBStatus!
+    updatedOn: Int!
+    createdOn: Int!
+    parent: String
+    creator: String!
+    admins: [Admin!]!
+}
+
+type FBStatus {
+    status: Status @Default(value: inactive)
+    reason: String
+    createdOn: Int!
+}
