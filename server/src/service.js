@@ -44,7 +44,7 @@ async function checkOwnership(owner, financialBeingId, ctx) {
     });
     
     if (!isSenderOwner) {
-      throw new GraphQLError('Unauthorized');
+      throw new GraphQLError('Sender isn\'t an owner');
     }
     
     return isSenderOwner[0].node;

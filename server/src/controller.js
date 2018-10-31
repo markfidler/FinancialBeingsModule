@@ -175,7 +175,6 @@ const resolvers = {
      * @param {Enumerator!} args.type - Financial being type (see ./db/datamodel)
      * @param {Enumerator!} args.kind - Financial being kind (see ./db/datamodel)
      * @param {String!} args.name - Name of the financial being we want to create
-     * @param {String!} args.slug - Slug of the financial being we want to create
      * @param {String} args.avatar - Image URL used for avatar of financial being
      * @param {String!} args.teamId - ID of owning team (financial being creator)
      * @param {Object!} args.status - Status of the FBeing (defaults to inactive)
@@ -272,7 +271,6 @@ const resolvers = {
      * @param {Enumerator!} args.type - Financial being type (see ./db/datamodel)
      * @param {Enumerator!} args.kind - Financial being kind (see ./db/datamodel)
      * @param {String!} args.name - Name of the financial being we want to create
-     * @param {String!} args.slug - Slug of the financial being we want to create
      * @param {String} args.avatar - Image URL used for avatar of financial being
      * @param {String!} args.teamId - ID of owning team (financial being creator)
      * @param {Object!} args.status - Status of the FBeing (defaults to inactive)
