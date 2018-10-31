@@ -11,24 +11,24 @@ const _ = require('lodash');
 const {logger} = require('./utils');
 const {GraphQLError} = require('graphql');
 const BEINGS_FRAGMENT = require('./db/BeingsFragment');
-const {getTeamByID, getAllTeams} = require('./gateways/teams');
+const {getAllTeams} = require('./gateways/teams');
 
 /**
  * Check ownership.
  * @param {Object!} owner - The employee who is responsible for the project.
- * @param {String!} financialBeingID - The name of the employee.
+ * @param {String!} financialBeingId - The name of the employee.
  * @param {Object!} ctx
  */
-async function checkOwnership(owner, financialBeingID, ctx) {
+async function checkOwnership(owner, financialBeingId, ctx) {
   try {
-    const financialBeing = await ctx.db.query.financialBeings({where: {id: financialBeingID}}, BEINGS_FRAGMENT);
+    const financialBeing = await ctx.db.query.financialBeings({where: {id: financialBeingId}}, BEINGS_FRAGMENT);
     
     if (!financialBeing[0].team) {
       throw new GraphQLError('Something went wrong while getting team');
     }
     
     // TODO@Urk: change this when Teams API starts to function
-    // const team = await getTeamByID(financialBeing[0].team);
+    // const team = await getTeamById(financialBeing[0].team);
     let team = await getAllTeams();
     
     team = _.filter(team.teams.edges, e => {
@@ -40,9 +40,7 @@ async function checkOwnership(owner, financialBeingID, ctx) {
     }
     
     const isSenderOwner = _.filter(team, e => {
-      
-      // TODO@Urk: change this when Teams API starts to function
-      return e.node.owner.split('|')[1] === owner;
+      return e.node.owner === owner;
     });
     
     if (!isSenderOwner) {
@@ -62,9 +60,9 @@ async function checkOwnership(owner, financialBeingID, ctx) {
   }
 }
 
-async function checkFinancialBeingOwnership(messageSender, financialBeingID, ctx) {
+async function checkFinancialBeingOwnership(messageSender, financialBeingId, ctx) {
   try {
-    const financialBeing = await ctx.db.query.financialBeings({where: {id: financialBeingID}}, BEINGS_FRAGMENT);
+    const financialBeing = await ctx.db.query.financialBeings({where: {id: financialBeingId}}, BEINGS_FRAGMENT);
     
     if (financialBeing.length < 1) {
       return false;
@@ -74,21 +72,23 @@ async function checkFinancialBeingOwnership(messageSender, financialBeingID, ctx
       return financialBeing[0];
     }
     
+    return true;
+    
   } catch (e) {
     logger.log({level: 'error', message: e.message});
     throw new GraphQLError('Something went wrong while getting Financial Beings');
   }
 }
 
-async function checkTeamOwnership(messageSender, teamID) {
+async function checkTeamOwnership(messageSender, teamId) {
   
   try {
     // TODO@Urk: change this when Teams API starts to function
-    // const team = await getTeamByID(financialBeing[0].team);
+    // const team = await getTeamById(financialBeing[0].team);
     let team = await getAllTeams();
     
     team = _.filter(team.teams.edges, e => {
-      return e.node.id === teamID;
+      return e.node.id === teamId;
     });
     
     if (!team) {
@@ -97,7 +97,7 @@ async function checkTeamOwnership(messageSender, teamID) {
     
     const isSenderOwner = _.filter(team[0].node.members, e => {
       if (e.role === 'OWNER') {
-        return e.member.authId.split('|')[1] === messageSender;
+        return e.member.authId === messageSender;
       }
     });
     
@@ -112,12 +112,13 @@ async function checkTeamOwnership(messageSender, teamID) {
   }
 }
 
-async function checkTeamMembership(memberToCheck, teamID) {
+async function checkTeamMembership(memberToCheck, teamId) {
   try {
+    // const team = await getTeamById(teamId);
     let team = await getAllTeams();
     
     team = _.filter(team.teams.edges, e => {
-      return e.node.id === teamID;
+      return e.node.id === teamId;
     });
     
     if (!team) {
@@ -125,7 +126,7 @@ async function checkTeamMembership(memberToCheck, teamID) {
     }
     
     const isMember = _.filter(team[0].node.members, e => {
-      return e.member.authId.split('|')[1] === memberToCheck;
+      return e.member.authId === memberToCheck;
     });
     
     if (isMember < 1 || !isMember) {

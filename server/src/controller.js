@@ -10,10 +10,11 @@ require('dotenv').config();
 
 // External modules
 const _ = require('lodash');
-const jwt = require('jsonwebtoken');
+const gql = require('graphql-tag');
 const {GraphQLError} = require('graphql');
 const {importSchema} = require('graphql-import');
 const {makeExecutableSchema} = require('graphql-tools');
+
 const slugify = require('slugify');
 
 // Internal modules
@@ -189,9 +190,11 @@ const resolvers = {
      */
     async createFinancialBeing(parent, args, ctx, info) {
       try {
-        // const messageSender = ctx.userid;
-        let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
-        messageSender = messageSender.sub.split('|')[1];
+        const messageSender = ctx.__userId;
+        
+        if (!messageSender) {
+          throw new Error('Unauthorized');
+        }
         
         // That means we need to verify the JWT, since we can't just add FB
         // without properly checking the user first (and its access rights)
@@ -285,11 +288,15 @@ const resolvers = {
     async updateFinancialBeing(parent, args, ctx, info) {
       try {
         
-        // const messageSender = ctx.userid;
-        let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
-        messageSender = messageSender.sub.split('|')[1];
+        const messageSender = ctx.__userId;
+        // let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+        // messageSender = messageSender.sub.split('|')[1];
         
         await checkFinancialBeingOwnership(messageSender, args.id, ctx);
+        
+        if (args.slug && !args.name) {
+          throw new GraphQLError('Cannot change slug without changing name');
+        }
         
         let data = {
           type: args.type,
@@ -334,7 +341,7 @@ const resolvers = {
       } catch (e) {
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while creating financial being!');
+          throw new GraphQLError('Something went wrong while updating financial being!');
         }
         
         throw e;
@@ -361,10 +368,8 @@ const resolvers = {
       
       try {
         // Only financial being owner can remove it from the team
-        // const messageSender = ctx.userid;
+        const messageSender = ctx.__userId;
         
-        let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
-        messageSender = messageSender.sub.split('|')[1];
         const isTeamOwner = await checkTeamOwnership(messageSender, args.teamId, ctx);
         
         if (!isTeamOwner) {
@@ -407,20 +412,20 @@ const resolvers = {
       
       try {
         // Only financial being owner can remove it from the team
-        // const messageSender = ctx.userid;
+        const messageSender = ctx.__userId;
         
-        let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
-        messageSender = messageSender.sub.split('|')[1];
+        // let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
+        // messageSender = messageSender.sub.split('|')[1];
         const isTeamMember = await checkTeamMembership(messageSender, args.teamId, ctx);
         
         if (!isTeamMember) {
-          throw new GraphQLError('Unauthorized');
+          throw new GraphQLError('Caller is not a team member');
         }
         
         const isBeingOwner = await checkFinancialBeingOwnership(messageSender, args.id, ctx);
         
         if (!isBeingOwner) {
-          throw new GraphQLError('Unauthorized');
+          throw new GraphQLError('Caller is not a Financial Being owner');
         }
         
         return await ctx.db.mutation.updateFinancialBeing({
@@ -460,15 +465,12 @@ const resolvers = {
       
       try {
         // Only financial being owner can add admin to the financial being
-        // const messageSender = ctx.userid;
-        
-        let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
-        messageSender = messageSender.sub.split('|')[1];
+        const messageSender = ctx.__userId;
         
         const financialBeing = await checkFinancialBeingOwnership(messageSender, args.id, ctx);
         
         if (!financialBeing) {
-          throw new GraphQLError('Unauthorized');
+          throw new GraphQLError('Sender is not a provided financial being creator');
         }
         
         const adminAlreadyExists = _.filter(financialBeing.admins, e => {
@@ -500,7 +502,7 @@ const resolvers = {
       } catch (e) {
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while creating financial being!');
+          throw new GraphQLError('Something went wrong while adding financial being admin!');
         }
         
         throw e;
@@ -526,10 +528,8 @@ const resolvers = {
     async removeFinancialBeingAdmin(parent, args, ctx, info) {
       try {
         // Only financial being owner can remove admin from financial being
-        // const messageSender = ctx.userid;
+        const messageSender = ctx.__userId;
         
-        let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
-        messageSender = messageSender.sub.split('|')[1];
         const financialBeing = await checkFinancialBeingOwnership(messageSender, args.id, ctx);
         
         const adminExists = _.filter(financialBeing.admins, e => {
@@ -540,15 +540,15 @@ const resolvers = {
           throw new GraphQLError('Admin doesn\'t exist!');
         }
         
-        return await ctx.db.mutation.updateFinancialBeing({
-          where: {id: args.id}
-        }, BEINGS_FRAGMENT);
+        return await ctx.db.mutation.deleteManyAdmins({
+          where: {adminId: args.adminId, financialBeingId: args.id}
+          }, gql`{count}`);
         
       } catch (e) {
         
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while creating financial being!');
+          throw new GraphQLError('Something went wrong while removing financial being admin!');
         }
         
         throw e;

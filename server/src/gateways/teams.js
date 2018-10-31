@@ -196,7 +196,7 @@ async function getCurrentMember(token) {
   }
 }
 
-async function getTeamByID(teamId, token) {
+async function getTeamById(teamId) {
   try {
     client.options.headers = {
       Authorization: `Bearer ${process.env.TOKEN}`
@@ -229,5 +229,5 @@ module.exports = {
   getTeamByName: getTeamByName,
   getTeamByOwnerId: getTeamByOwnerId,
   getCurrentMember: getCurrentMember,
-  getTeamByID: getTeamByID
+  getTeamById: getTeamById
 };

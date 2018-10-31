@@ -32,18 +32,9 @@ app.use('/graphql', graphqlHTTP(async req => ({
   context: {
     db: db,
     req: req,
-    userID: req.headers.userid
+    __userId: req.headers.userid || process.env.TEST_USER_ID
   }
 })));
 
-app.use(
-  function(err, request, res, next) {
-    if (err) {
-      return res.status(201).send(err.message);
-    } else {
-      next();
-    }
-  }
-);
 
 module.exports = app;

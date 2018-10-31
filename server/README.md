@@ -5,9 +5,9 @@ Manages Financial Beings within the system
 
 ```
 $ npm install
-$ npm bin/www
+$ npm run start
 ```
-Go to: <http://localhost:3000/graphql>
+Go to: <http://localhost:4001/graphql>
 
 You can run the following query in GraphQL
 ```
@@ -60,17 +60,10 @@ We're using .env in order not to push sensitive information to GitHub.
 Quick reference - if you need to require dotenv, you can use `-r dotenv/config`
 
 .env example used for this project:
+
 ```
-# DATABASE
-DB_HOST=
-DB_USER=
-DB_PASS=
-DB_DATABASE=
-DB_PORT=
-
-AA_USER_MODULE=https://users-api.advancedalgos.net/graphql
-AA_TEAMS_MODULE=https://teams-api.advancedalgos.net/graphql
-
-PRISMA_ENDPOINT=
-PRISMA_SECRET=
+AA_USER_MODULE=
+AA_TEAMS_MODULE=
+TOKEN=
+PORT=
 ```

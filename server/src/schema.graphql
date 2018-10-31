@@ -56,5 +56,5 @@ type Mutation {
     removeFinancialBeingAdmin(
         id: String!,
         adminId: String!
-    ): FinancialBeing
+    ): BatchPayload
 }
