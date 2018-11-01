@@ -1,0 +1,58 @@
+# import Query.FinancialBeingConnection, FinancialBeings from "./db/generated/prisma.graphql"
+
+directive @isAuthenticated on QUERY | FIELD | MUTATION
+directive @hasRole(roles: [String]) on QUERY | FIELD | MUTATION
+directive @isOwner(type: String) on QUERY | MUTATION
+directive @isOwnerOrHasRole(type: String, roles: [String]) on QUERY | MUTATION
+
+type Query {
+    financialBeings: [FinancialBeing]
+    financialBeingsByName(name: String!): [FinancialBeing]
+    financialBeingsByID(id: ID!): [FinancialBeing]
+    financialBeingsByTeamID(teamId: ID!): [FinancialBeing]
+    financialBeingsByType(type: FBType!): [FinancialBeing]
+    financialBeingsByKind(kind: FBKind!): [FinancialBeing]
+}
+
+type Mutation {
+    createFinancialBeing(
+        type: FBType!,
+        kind: FBKind!,
+        name: String!,
+        avatar: String,
+        teamId: String!,
+        status: Status,
+        reason: String,
+        parent: String,
+    ): FinancialBeing
+
+    updateFinancialBeing(
+        id: String!,
+        type: FBType,
+        kind: FBKind,
+        name: String,
+        avatar: String,
+        status: Status,
+        reason: String,
+    ): FinancialBeing
+
+    removeFinancialBeingFromTeam(
+        id: String!
+        teamId: String!
+    ): FinancialBeing
+
+    addFinancialBeingToTeam(
+        id: String!
+        teamId: String!
+    ): FinancialBeing
+
+    addFinancialBeingAdmin(
+        id: String!,
+        adminId: String!
+    ): FinancialBeing
+
+    removeFinancialBeingAdmin(
+        id: String!,
+        adminId: String!
+    ): BatchPayload
+}

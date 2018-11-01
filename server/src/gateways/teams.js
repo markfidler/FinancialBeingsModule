@@ -190,39 +190,37 @@ async function getCurrentMember(token) {
     `;
     
     return await client.request(query);
-  } catch (err) {
-    console.log(err);
-    throw new Error('Getting current member failed');
+  } catch (e) {
+    logger.error(`Error Occurred: ${e.message} | On: ${new Date().toISOString()}`);
+    throw new GraphQLError('Getting current member failed');
   }
 }
 
-async function getTeamByID(teamId, token) {
+async function getTeamById(teamId) {
   try {
     client.options.headers = {
-      Authorization: token
+      Authorization: `Bearer ${process.env.TOKEN}`
     };
     
     const query = `
     query {
       teamById(teamId: "${teamId}") {
         id
+        name
+        slug
+        owner
+        status {
+          status
+          reason
+          createdAt
+        }
       }
     }
     `;
     
-    const data = await client.request(query);
-    return data;
+    return await client.request(query);
   } catch (e) {
     throw new GraphQLError('Error occurred while getting Team');
-  }
-}
-
-async function createTeam() {
-  try {
-  
-  } catch (e) {
-    logger.error(`Error Occurred: ${e.message} | On: ${new Date().toISOString()}`);
-    throw new GraphQLError(e.message);
   }
 }
 
@@ -231,5 +229,5 @@ module.exports = {
   getTeamByName: getTeamByName,
   getTeamByOwnerId: getTeamByOwnerId,
   getCurrentMember: getCurrentMember,
-  getTeamByID: getTeamByID
+  getTeamById: getTeamById
 };

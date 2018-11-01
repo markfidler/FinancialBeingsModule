@@ -1,0 +1,568 @@
+type Admin {
+  adminId: String!
+  financialBeingId: String!
+}
+
+type AdminConnection {
+  pageInfo: PageInfo!
+  edges: [AdminEdge]!
+  aggregate: AggregateAdmin!
+}
+
+input AdminCreateInput {
+  adminId: String!
+  financialBeingId: String!
+}
+
+input AdminCreateManyInput {
+  create: [AdminCreateInput!]
+}
+
+type AdminEdge {
+  node: Admin!
+  cursor: String!
+}
+
+enum AdminOrderByInput {
+  adminId_ASC
+  adminId_DESC
+  financialBeingId_ASC
+  financialBeingId_DESC
+  id_ASC
+  id_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type AdminPreviousValues {
+  adminId: String!
+  financialBeingId: String!
+}
+
+type AdminSubscriptionPayload {
+  mutation: MutationType!
+  node: Admin
+  updatedFields: [String!]
+  previousValues: AdminPreviousValues
+}
+
+input AdminSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: AdminWhereInput
+  AND: [AdminSubscriptionWhereInput!]
+  OR: [AdminSubscriptionWhereInput!]
+  NOT: [AdminSubscriptionWhereInput!]
+}
+
+input AdminUpdateInput {
+  adminId: String
+  financialBeingId: String
+}
+
+input AdminUpdateManyInput {
+  create: [AdminCreateInput!]
+}
+
+input AdminWhereInput {
+  adminId: String
+  adminId_not: String
+  adminId_in: [String!]
+  adminId_not_in: [String!]
+  adminId_lt: String
+  adminId_lte: String
+  adminId_gt: String
+  adminId_gte: String
+  adminId_contains: String
+  adminId_not_contains: String
+  adminId_starts_with: String
+  adminId_not_starts_with: String
+  adminId_ends_with: String
+  adminId_not_ends_with: String
+  financialBeingId: String
+  financialBeingId_not: String
+  financialBeingId_in: [String!]
+  financialBeingId_not_in: [String!]
+  financialBeingId_lt: String
+  financialBeingId_lte: String
+  financialBeingId_gt: String
+  financialBeingId_gte: String
+  financialBeingId_contains: String
+  financialBeingId_not_contains: String
+  financialBeingId_starts_with: String
+  financialBeingId_not_starts_with: String
+  financialBeingId_ends_with: String
+  financialBeingId_not_ends_with: String
+  AND: [AdminWhereInput!]
+  OR: [AdminWhereInput!]
+  NOT: [AdminWhereInput!]
+}
+
+type AggregateAdmin {
+  count: Int!
+}
+
+type AggregateFBStatus {
+  count: Int!
+}
+
+type AggregateFinancialBeing {
+  count: Int!
+}
+
+type BatchPayload {
+  count: Long!
+}
+
+enum FBKind {
+  TRADER
+  INDICATOR
+  EXTRACTOR
+  PLOTTER
+}
+
+type FBStatus {
+  status: Status
+  reason: String
+  createdOn: Int!
+}
+
+type FBStatusConnection {
+  pageInfo: PageInfo!
+  edges: [FBStatusEdge]!
+  aggregate: AggregateFBStatus!
+}
+
+input FBStatusCreateInput {
+  status: Status
+  reason: String
+  createdOn: Int!
+}
+
+input FBStatusCreateOneInput {
+  create: FBStatusCreateInput
+}
+
+type FBStatusEdge {
+  node: FBStatus!
+  cursor: String!
+}
+
+enum FBStatusOrderByInput {
+  status_ASC
+  status_DESC
+  reason_ASC
+  reason_DESC
+  createdOn_ASC
+  createdOn_DESC
+  id_ASC
+  id_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type FBStatusPreviousValues {
+  status: Status
+  reason: String
+  createdOn: Int!
+}
+
+type FBStatusSubscriptionPayload {
+  mutation: MutationType!
+  node: FBStatus
+  updatedFields: [String!]
+  previousValues: FBStatusPreviousValues
+}
+
+input FBStatusSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: FBStatusWhereInput
+  AND: [FBStatusSubscriptionWhereInput!]
+  OR: [FBStatusSubscriptionWhereInput!]
+  NOT: [FBStatusSubscriptionWhereInput!]
+}
+
+input FBStatusUpdateDataInput {
+  status: Status
+  reason: String
+  createdOn: Int
+}
+
+input FBStatusUpdateInput {
+  status: Status
+  reason: String
+  createdOn: Int
+}
+
+input FBStatusUpdateOneRequiredInput {
+  create: FBStatusCreateInput
+  update: FBStatusUpdateDataInput
+  upsert: FBStatusUpsertNestedInput
+}
+
+input FBStatusUpsertNestedInput {
+  update: FBStatusUpdateDataInput!
+  create: FBStatusCreateInput!
+}
+
+input FBStatusWhereInput {
+  status: Status
+  status_not: Status
+  status_in: [Status!]
+  status_not_in: [Status!]
+  reason: String
+  reason_not: String
+  reason_in: [String!]
+  reason_not_in: [String!]
+  reason_lt: String
+  reason_lte: String
+  reason_gt: String
+  reason_gte: String
+  reason_contains: String
+  reason_not_contains: String
+  reason_starts_with: String
+  reason_not_starts_with: String
+  reason_ends_with: String
+  reason_not_ends_with: String
+  createdOn: Int
+  createdOn_not: Int
+  createdOn_in: [Int!]
+  createdOn_not_in: [Int!]
+  createdOn_lt: Int
+  createdOn_lte: Int
+  createdOn_gt: Int
+  createdOn_gte: Int
+  AND: [FBStatusWhereInput!]
+  OR: [FBStatusWhereInput!]
+  NOT: [FBStatusWhereInput!]
+}
+
+enum FBType {
+  BOT
+  NET
+  ADVANCED
+}
+
+type FinancialBeing {
+  id: ID!
+  type: FBType!
+  kind: FBKind!
+  name: String!
+  slug: String!
+  avatar: String
+  team: String!
+  status: FBStatus!
+  updatedOn: Int!
+  createdOn: Int!
+  parent: String
+  creator: String!
+  admins(where: AdminWhereInput, orderBy: AdminOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Admin!]
+}
+
+type FinancialBeingConnection {
+  pageInfo: PageInfo!
+  edges: [FinancialBeingEdge]!
+  aggregate: AggregateFinancialBeing!
+}
+
+input FinancialBeingCreateInput {
+  type: FBType!
+  kind: FBKind!
+  name: String!
+  slug: String!
+  avatar: String
+  team: String!
+  status: FBStatusCreateOneInput!
+  updatedOn: Int!
+  createdOn: Int!
+  parent: String
+  creator: String!
+  admins: AdminCreateManyInput
+}
+
+type FinancialBeingEdge {
+  node: FinancialBeing!
+  cursor: String!
+}
+
+enum FinancialBeingOrderByInput {
+  id_ASC
+  id_DESC
+  type_ASC
+  type_DESC
+  kind_ASC
+  kind_DESC
+  name_ASC
+  name_DESC
+  slug_ASC
+  slug_DESC
+  avatar_ASC
+  avatar_DESC
+  team_ASC
+  team_DESC
+  updatedOn_ASC
+  updatedOn_DESC
+  createdOn_ASC
+  createdOn_DESC
+  parent_ASC
+  parent_DESC
+  creator_ASC
+  creator_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type FinancialBeingPreviousValues {
+  id: ID!
+  type: FBType!
+  kind: FBKind!
+  name: String!
+  slug: String!
+  avatar: String
+  team: String!
+  updatedOn: Int!
+  createdOn: Int!
+  parent: String
+  creator: String!
+}
+
+type FinancialBeingSubscriptionPayload {
+  mutation: MutationType!
+  node: FinancialBeing
+  updatedFields: [String!]
+  previousValues: FinancialBeingPreviousValues
+}
+
+input FinancialBeingSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: FinancialBeingWhereInput
+  AND: [FinancialBeingSubscriptionWhereInput!]
+  OR: [FinancialBeingSubscriptionWhereInput!]
+  NOT: [FinancialBeingSubscriptionWhereInput!]
+}
+
+input FinancialBeingUpdateInput {
+  type: FBType
+  kind: FBKind
+  name: String
+  slug: String
+  avatar: String
+  team: String
+  status: FBStatusUpdateOneRequiredInput
+  updatedOn: Int
+  createdOn: Int
+  parent: String
+  creator: String
+  admins: AdminUpdateManyInput
+}
+
+input FinancialBeingWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  type: FBType
+  type_not: FBType
+  type_in: [FBType!]
+  type_not_in: [FBType!]
+  kind: FBKind
+  kind_not: FBKind
+  kind_in: [FBKind!]
+  kind_not_in: [FBKind!]
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  slug: String
+  slug_not: String
+  slug_in: [String!]
+  slug_not_in: [String!]
+  slug_lt: String
+  slug_lte: String
+  slug_gt: String
+  slug_gte: String
+  slug_contains: String
+  slug_not_contains: String
+  slug_starts_with: String
+  slug_not_starts_with: String
+  slug_ends_with: String
+  slug_not_ends_with: String
+  avatar: String
+  avatar_not: String
+  avatar_in: [String!]
+  avatar_not_in: [String!]
+  avatar_lt: String
+  avatar_lte: String
+  avatar_gt: String
+  avatar_gte: String
+  avatar_contains: String
+  avatar_not_contains: String
+  avatar_starts_with: String
+  avatar_not_starts_with: String
+  avatar_ends_with: String
+  avatar_not_ends_with: String
+  team: String
+  team_not: String
+  team_in: [String!]
+  team_not_in: [String!]
+  team_lt: String
+  team_lte: String
+  team_gt: String
+  team_gte: String
+  team_contains: String
+  team_not_contains: String
+  team_starts_with: String
+  team_not_starts_with: String
+  team_ends_with: String
+  team_not_ends_with: String
+  status: FBStatusWhereInput
+  updatedOn: Int
+  updatedOn_not: Int
+  updatedOn_in: [Int!]
+  updatedOn_not_in: [Int!]
+  updatedOn_lt: Int
+  updatedOn_lte: Int
+  updatedOn_gt: Int
+  updatedOn_gte: Int
+  createdOn: Int
+  createdOn_not: Int
+  createdOn_in: [Int!]
+  createdOn_not_in: [Int!]
+  createdOn_lt: Int
+  createdOn_lte: Int
+  createdOn_gt: Int
+  createdOn_gte: Int
+  parent: String
+  parent_not: String
+  parent_in: [String!]
+  parent_not_in: [String!]
+  parent_lt: String
+  parent_lte: String
+  parent_gt: String
+  parent_gte: String
+  parent_contains: String
+  parent_not_contains: String
+  parent_starts_with: String
+  parent_not_starts_with: String
+  parent_ends_with: String
+  parent_not_ends_with: String
+  creator: String
+  creator_not: String
+  creator_in: [String!]
+  creator_not_in: [String!]
+  creator_lt: String
+  creator_lte: String
+  creator_gt: String
+  creator_gte: String
+  creator_contains: String
+  creator_not_contains: String
+  creator_starts_with: String
+  creator_not_starts_with: String
+  creator_ends_with: String
+  creator_not_ends_with: String
+  admins_every: AdminWhereInput
+  admins_some: AdminWhereInput
+  admins_none: AdminWhereInput
+  AND: [FinancialBeingWhereInput!]
+  OR: [FinancialBeingWhereInput!]
+  NOT: [FinancialBeingWhereInput!]
+}
+
+input FinancialBeingWhereUniqueInput {
+  id: ID
+  name: String
+  slug: String
+}
+
+scalar Long
+
+type Mutation {
+  createAdmin(data: AdminCreateInput!): Admin!
+  updateManyAdmins(data: AdminUpdateInput!, where: AdminWhereInput): BatchPayload!
+  deleteManyAdmins(where: AdminWhereInput): BatchPayload!
+  createFBStatus(data: FBStatusCreateInput!): FBStatus!
+  updateManyFBStatuses(data: FBStatusUpdateInput!, where: FBStatusWhereInput): BatchPayload!
+  deleteManyFBStatuses(where: FBStatusWhereInput): BatchPayload!
+  createFinancialBeing(data: FinancialBeingCreateInput!): FinancialBeing!
+  updateFinancialBeing(data: FinancialBeingUpdateInput!, where: FinancialBeingWhereUniqueInput!): FinancialBeing
+  updateManyFinancialBeings(data: FinancialBeingUpdateInput!, where: FinancialBeingWhereInput): BatchPayload!
+  upsertFinancialBeing(where: FinancialBeingWhereUniqueInput!, create: FinancialBeingCreateInput!, update: FinancialBeingUpdateInput!): FinancialBeing!
+  deleteFinancialBeing(where: FinancialBeingWhereUniqueInput!): FinancialBeing
+  deleteManyFinancialBeings(where: FinancialBeingWhereInput): BatchPayload!
+}
+
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type Query {
+  admins(where: AdminWhereInput, orderBy: AdminOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Admin]!
+  adminsConnection(where: AdminWhereInput, orderBy: AdminOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): AdminConnection!
+  fBStatuses(where: FBStatusWhereInput, orderBy: FBStatusOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [FBStatus]!
+  fBStatusesConnection(where: FBStatusWhereInput, orderBy: FBStatusOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): FBStatusConnection!
+  financialBeing(where: FinancialBeingWhereUniqueInput!): FinancialBeing
+  financialBeings(where: FinancialBeingWhereInput, orderBy: FinancialBeingOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [FinancialBeing]!
+  financialBeingsConnection(where: FinancialBeingWhereInput, orderBy: FinancialBeingOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): FinancialBeingConnection!
+  node(id: ID!): Node
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  APPLIED
+  INVITED
+  REMOVED
+}
+
+type Subscription {
+  admin(where: AdminSubscriptionWhereInput): AdminSubscriptionPayload
+  fBStatus(where: FBStatusSubscriptionWhereInput): FBStatusSubscriptionPayload
+  financialBeing(where: FinancialBeingSubscriptionWhereInput): FinancialBeingSubscriptionPayload
+}

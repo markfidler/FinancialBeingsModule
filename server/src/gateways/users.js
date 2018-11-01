@@ -108,7 +108,7 @@ async function getUserByAuthId(authId) {
          id
        }
      }
-   }   
+   }
    `;
 
     return await client.request(query);
@@ -130,7 +130,7 @@ async function getUserIdByToken(token) {
       authenticate(idToken: ${token}){
         authId
       }
-    }   
+    }
    `;
     return await client.request(mutation);
   } catch (err) {
@@ -155,7 +155,7 @@ async function getUserRole(roleId) {
           id
         }
       }
-   }   
+   }
    `;
 
     return await client.request(query);
@@ -199,7 +199,7 @@ async function getUserBySearchFields(alias, firstName, middleName, lastName) {
 * @return {object} User module information
 * @error {object} Error
 */
-async function getUserDescendents(userId) {
+async function getUserDescendants(userId) {
   try {
     const query = `
     query {
@@ -219,7 +219,7 @@ async function getUserDescendents(userId) {
 
     return await client.request(query);
   } catch (err) {
-    throw new Error('Getting user decendents failed');
+    throw new Error('Getting user descendants failed');
   }
 }
 
@@ -230,5 +230,5 @@ module.exports = {
   getUserIdByToken: getUserIdByToken,
   getUserRole: getUserRole,
   getUserBySearchFields: getUserBySearchFields,
-  getUserDescendents: getUserDescendents
+  getUserDescendants: getUserDescendants
 };
