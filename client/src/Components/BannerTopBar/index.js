@@ -7,7 +7,7 @@ const BannerTopBar = ({
   title,
   text,
 }) => (
-  <div className={`bannerTopBar ${size}`} style={backgroundUrl ? { backgroundImage: `url(${backgroundUrl})` } : {}}>
+  <div className={`bannerTopBar ${size}`} style={backgroundUrl ? { backgroundImage: `url(http://aacorporatesitedevelop.azurewebsites.net/img/photos/modules.jpg)` } : {}}>
     <div className='caption'>
       <Typography className='title' variant='h1' align='center'>{title}</Typography>
       <Typography className='text' variant='h2' align='center'>{text}</Typography>
