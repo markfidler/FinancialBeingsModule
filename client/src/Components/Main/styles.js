@@ -5,6 +5,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.paper,
     padding: 0,
     margin: 0,
+    minHeight: '500px'
   },
   tabTitle: {
     width: '33%',

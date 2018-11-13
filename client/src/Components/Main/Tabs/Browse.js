@@ -15,7 +15,7 @@ class History extends React.Component {
         color='textPrimary'
         gutterBottom
       >
-        Your old events (maybe here, maybe not, who knows)
+      Browse financial beings
       </Typography>
     );
   }

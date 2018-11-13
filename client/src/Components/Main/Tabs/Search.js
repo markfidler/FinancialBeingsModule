@@ -1,25 +1,244 @@
-import React, { Component } from 'react';
-import { Typography } from '@material-ui/core';
-
+import React from 'react';
+import classNames from 'classnames';
+import Select from 'react-select';
 import { withStyles } from '@material-ui/core/styles';
-import styles from '../styles';
+import Typography from '@material-ui/core/Typography';
+import NoSsr from '@material-ui/core/NoSsr';
+import TextField from '@material-ui/core/TextField';
+import Paper from '@material-ui/core/Paper';
+import Chip from '@material-ui/core/Chip';
+import MenuItem from '@material-ui/core/MenuItem';
+import CancelIcon from '@material-ui/icons/Cancel';
+import Button from '@material-ui/core/Button'
+import { emphasize } from '@material-ui/core/styles/colorManipulator';
 
-class History extends Component {
+const suggestions = [
+  { label: 'BarryBot' },
+  { label: 'LuisBot' },
+  { label: 'NikolaBot' },
+  { label: 'VladaBot' },
+  { label: 'AndreyaBot' },
+  { label: 'KillerBot' },
+  { label: 'NoobBot' },
+  { label: 'ArgentinaBot' },
+  { label: 'Use' },
+  { label: 'Gitflow' },
+  { label: 'Please' },
+  { label: 'Santa Claus bot' },
+  { label: 'ReactBot' },
+  { label: 'Pavle' },
+  { label: 'Filip' },
+  { label: 'Vucicu pederu' },
+].map(suggestion => ({
+  value: suggestion.label,
+  label: suggestion.label,
+  rank: Math.random(),
+}));
+
+const styles = theme => ({
+  root: {
+    flexGrow: 1,
+    height: 250,
+  },
+  input: {
+    display: 'flex',
+    padding: 0,
+  },
+  valueContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    flex: 1,
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  chip: {
+    margin: `${theme.spacing.unit / 2}px ${theme.spacing.unit / 4}px`,
+  },
+  chipFocused: {
+    backgroundColor: emphasize(
+      theme.palette.type === 'light' ? theme.palette.grey[300] : theme.palette.grey[700],
+      0.08,
+    ),
+  },
+  noOptionsMessage: {
+    padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px`,
+  },
+  singleValue: {
+    fontSize: 16,
+  },
+  placeholder: {
+    position: 'absolute',
+    left: 2,
+    fontSize: 16,
+  },
+  paper: {
+    position: 'absolute',
+    zIndex: 1,
+    marginTop: theme.spacing.unit,
+    left: 0,
+    right: 0,
+  },
+  divider: {
+    height: theme.spacing.unit * 2,
+  },
+});
+
+function NoOptionsMessage(props) {
+  return (
+    <Typography
+      color="textSecondary"
+      className={props.selectProps.classes.noOptionsMessage}
+      {...props.innerProps}
+    >
+      {props.children}
+    </Typography>
+  );
+}
+
+function inputComponent({ inputRef, ...props }) {
+  return <div ref={inputRef} {...props} />;
+}
+
+function Control(props) {
+  return (
+    <TextField
+      fullWidth
+      InputProps={{
+        inputComponent,
+        inputProps: {
+          className: props.selectProps.classes.input,
+          inputRef: props.innerRef,
+          children: props.children,
+          ...props.innerProps,
+        },
+      }}
+      {...props.selectProps.textFieldProps}
+    />
+  );
+}
+
+function Option(props) {
+  return (
+    <MenuItem
+      buttonRef={props.innerRef}
+      selected={props.isFocused}
+      component="div"
+      style={{
+        fontWeight: props.isSelected ? 500 : 400,
+      }}
+      {...props.innerProps}
+    >
+      {props.children}
+    </MenuItem>
+  );
+}
+
+function Placeholder(props) {
+  return (
+    <Typography
+      color="textSecondary"
+      className={props.selectProps.classes.placeholder}
+      {...props.innerProps}
+    >
+      {props.children}
+    </Typography>
+  );
+}
+
+function SingleValue(props) {
+  return (
+    <Typography className={props.selectProps.classes.singleValue} {...props.innerProps}>
+      {props.children}
+    </Typography>
+  );
+}
+
+function ValueContainer(props) {
+  return <div className={props.selectProps.classes.valueContainer}>{props.children}</div>;
+}
+
+function MultiValue(props) {
+  return (
+    <Chip
+      tabIndex={-1}
+      label={props.children}
+      className={classNames(props.selectProps.classes.chip, {
+        [props.selectProps.classes.chipFocused]: props.isFocused,
+      })}
+      onDelete={props.removeProps.onClick}
+      deleteIcon={<CancelIcon {...props.removeProps} />}
+    />
+  );
+}
+
+function Menu(props) {
+  return (
+    <Paper square className={props.selectProps.classes.paper} {...props.innerProps}>
+      {props.children}
+    </Paper>
+  );
+}
+
+const components = {
+  Control,
+  Menu,
+  MultiValue,
+  NoOptionsMessage,
+  Option,
+  Placeholder,
+  SingleValue,
+  ValueContainer,
+};
+
+class Search extends React.Component {
+  state = {
+    single: null,
+  };
+
+  handleChange = name => value => {
+    this.setState({
+      [name]: value,
+    });
+  };
 
   render() {
-    const { classes } = this.props;
+    const { classes, theme } = this.props;
+
+    const selectStyles = {
+      input: base => ({
+        ...base,
+        color: theme.palette.text.primary,
+        '& input': {
+          font: 'inherit',
+        },
+      }),
+    };
+
     return (
-      <Typography
-        className={classes.title}
-        variant='h4'
-        align='center'
-        color='textPrimary'
-        gutterBottom
-      >
-        Your old events (maybe here, maybe not, who knows)
-      </Typography>
+      <div className={classes.root}>
+        <NoSsr>
+          <Select
+            classes={classes}
+            styles={selectStyles}
+            options={suggestions}
+            components={components}
+            value={this.state.single}
+            onChange={this.handleChange('single')}
+            placeholder="Search financial being"
+          />
+
+          {this.state.single ?
+            <div>
+              <img src="https://placekitten.com/200/200" alt="" />
+              <p>Bot name: {this.state.single.label}</p>
+              <p>Bot rank: {this.state.single.rank}</p>
+              <Button variant='contained' color='secondary' className={{ margin: theme.spacing.unit, marginTop: theme.spacing.unit * 3 }}>Go to profile</Button>
+            </div>: ''}
+
+        </NoSsr>
+      </div>
     );
   }
 }
 
-export default withStyles(styles)(History);
+export default withStyles(styles, { withTheme: true })(Search);
