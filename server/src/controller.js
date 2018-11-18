@@ -564,7 +564,7 @@ const resolvers = {
         
         return await ctx.db.mutation.deleteManyAdmins({
           where: {adminId: args.adminId, financialBeingId: args.id}
-          }, gql`{count}`);
+        }, gql`{count}`);
         
       } catch (e) {
         

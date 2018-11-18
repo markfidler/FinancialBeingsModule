@@ -15,7 +15,6 @@ const notAllowed = {
   ]
 };
 
-
 const {
   Prisma,
   extractFragmentReplacements
@@ -40,7 +39,7 @@ const db = new Prisma({
 });
 
 app.use('/graphql', (req, res, next) => {
-  if (req.headers.preshared === process.env.PRESHARED_GATEWAY_KEY) {
+  if (req.headers.preshared === process.env.GATEWAY_PRESHARED) {
     next();
   } else {
     return res.status(401).send(notAllowed);
@@ -53,7 +52,7 @@ app.use('/graphql', graphqlHTTP(async req => ({
   context: {
     db: db,
     req: req,
-    __userId: req.headers.userid
+    __userId: req.headers.userid ? req.headers.userid : null
   }
 })));
 
