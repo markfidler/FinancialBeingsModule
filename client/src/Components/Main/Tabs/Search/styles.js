@@ -43,6 +43,9 @@ export const styles = theme => ({
     left: 0,
     right: 0,
   },
+  singleBot: {
+    marginTop: '30px'
+  },
   divider: {
     height: theme.spacing.unit * 2,
   },

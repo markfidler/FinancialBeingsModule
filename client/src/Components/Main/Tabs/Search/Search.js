@@ -5,34 +5,14 @@ import NoSsr from '@material-ui/core/NoSsr';
 import Button from '@material-ui/core/Button'
 import { styles } from "./styles";
 import { components } from "./Helpers";
-
-const suggestions = [
-  { label: 'BarryBot' },
-  { label: 'LuisBot' },
-  { label: 'NikolaBot' },
-  { label: 'VladaBot' },
-  { label: 'AndreyaBot' },
-  { label: 'KillerBot' },
-  { label: 'NoobBot' },
-  { label: 'ArgentinaBot' },
-  { label: 'Use' },
-  { label: 'Gitflow' },
-  { label: 'Please' },
-  { label: 'Santa Claus bot' },
-  { label: 'ReactBot' },
-  { label: 'Pavle' },
-  { label: 'Filip' },
-  { label: 'Vucicu pederu' },
-].map(suggestion => ({
-  value: suggestion.label,
-  label: suggestion.label,
-  rank: Math.random(),
-}));
-
+import {Query} from 'react-apollo';
+import {FB_BY_NAME} from "../../../../GraphQL/Calls";
+import BotCard from '../Browse/views/Card'
 
 class Search extends React.Component {
   state = {
     single: null,
+    queryBot: ''
   };
 
   handleChange = name => value => {
@@ -57,23 +37,30 @@ class Search extends React.Component {
     return (
       <div className={classes.root}>
         <NoSsr>
-          <Select
-            classes={classes}
-            styles={selectStyles}
-            options={suggestions}
-            components={components}
-            value={this.state.single}
-            onChange={this.handleChange('single')}
-            placeholder="Search financial being"
-          />
 
-          {this.state.single ?
-            <div>
-              <img src="https://placekitten.com/200/200" alt="" />
-              <p>Bot name: {this.state.single.label}</p>
-              <p>Bot rank: {this.state.single.rank}</p>
-              <Button variant='contained' color='secondary' className={{ margin: theme.spacing.unit, marginTop: theme.spacing.unit * 3 }}>Go to profile</Button>
-            </div>: ''}
+          <Query query={FB_BY_NAME} variables={{ name: this.state.queryBot }}>
+            {({ loading, error, data }) => {
+              if(loading) return "Please wait, loading in progress..";
+              if(error) return `Error! ${error.message}`;
+              const suggestions = data.financialBeings_FinancialBeingsByPartialName.map(suggestion => ({
+                name: suggestion.name,
+                label: suggestion.name,
+                id: suggestion.id,
+                kind: suggestion.kind,
+              }));
+              return <Select
+                classes={classes}
+                styles={selectStyles}
+                options={suggestions}
+                components={components}
+                value={this.state.single}
+                onChange={this.handleChange('single')}
+                placeholder="Search financial being"
+              />
+            }}
+          </Query>
+
+          {this.state.single ? <BotCard className={classes.singleBot} botInfo={this.state.single} /> : ''}
 
         </NoSsr>
       </div>

@@ -27,7 +27,7 @@ export const FINANCIAL_BEINGS = gql`
 
 export const FB_BY_NAME = gql`
 query financialBeingsByPartialName {
-  financialBeingsByPartialName(name: "2") {
+  financialBeings_FinancialBeingsByPartialName(name: "2") {
     id
     name
     kind
