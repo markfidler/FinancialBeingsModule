@@ -5,7 +5,7 @@ const {GraphQLError} = require('graphql');
 const {logger} = require('../utils');
 
 
-const client = new graphql.GraphQLClient(process.env.AA_TEAMS_MODULE, {
+const client = new graphql.GraphQLClient(process.env.GRAPHQL_API_URL, {
   headers: {}
 });
 
@@ -17,8 +17,8 @@ const client = new graphql.GraphQLClient(process.env.AA_TEAMS_MODULE, {
 async function getAllTeams() {
   try {
     const query = `
-    query teamsQuery {
-      teams {
+    query getAllTeams {
+      teams_Teams {
         edges {
           node {
             id
