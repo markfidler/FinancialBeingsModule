@@ -34,3 +34,27 @@ query financialBeingsByPartialName {
   }
 }
 `;
+
+export const FB_BY_ID = gql`
+query financialBeingsByID {
+  financialBeings_FinancialBeingsByID(id: $id) {
+    id
+    type
+    kind
+    name
+    slug
+    avatar
+    creator
+    status {
+      status
+      reason
+    }
+    updatedOn
+    createdOn
+    team
+    admins {
+      adminId
+    }
+  }
+}
+`;
