@@ -37,6 +37,7 @@ function MediaCard(props) {
             Sub-Zero is a formidable fighter possessing the innate ability to control ice in many forms and whose
             defining character trait is his fierce rivalry with his nemesis Scorpion.
           </Typography>
+          <br/>
           <Typography variant="button" gutterBottom>
             {`Type: ${botInfo.type}`}
           </Typography>
