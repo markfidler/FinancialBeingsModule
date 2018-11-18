@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 
 export const FINANCIAL_BEINGS = gql`
   query FB {
-  financialBeings {
+  financialBeings_FinancialBeings {
     id
     type
     kind

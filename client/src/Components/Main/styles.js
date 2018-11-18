@@ -5,6 +5,8 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.paper,
     padding: 0,
     margin: 0,
+    marginTop: '40px',
+    marginBottom: '40px',
     minHeight: '500px'
   },
   tabTitle: {
@@ -28,6 +30,14 @@ const styles = theme => ({
   },
   title: {
     marginTop: 20,
+  },
+  progress: {
+    margin: theme.spacing.unit * 2,
+  },
+  paper: {
+    padding: theme.spacing.unit * 2,
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
   },
 });
 

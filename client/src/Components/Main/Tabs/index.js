@@ -1,6 +1,6 @@
 import Search from './Search/Search';
 import Genealogy from './Genealogy';
-import Browse from './Browse';
+import Browse from './Browse/Browse';
 
 export {
   Search,
