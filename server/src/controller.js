@@ -163,6 +163,30 @@ const resolvers = {
         
         throw e;
       }
+    },
+    /**
+     * Query function - get financial being by kind
+     * @param {Object} parent - The result of the previous resolver call.
+     * @param {string} kind - Necessary parameter which serves as a filter.
+     * @param {Object} ctx - context
+     * @param {Object} ctx.db - db object on provided context with closure functions to talk with Prisma DB interface
+     * @param {Object} ctx.req - HTTP request object
+     * @param {Object} info - query AST and more execution information
+     * @return {Object} GraphQL Query response - BEINGS_FRAGMENT is the template
+     */
+    async financialBeingsByPartialName(parent, {name}, ctx, info) {
+      try {
+        
+        return await ctx.db.query.financialBeings({where: {name_contains: name}}, BEINGS_FRAGMENT);
+      } catch (e) {
+        if (e.__proto__.name !== 'GraphQLError') {
+          logger.log({level: 'error', message: e.message});
+          
+          throw new GraphQLError('Something went wrong while getting Financial Beings');
+        }
+        
+        throw e;
+      }
     }
   },
   Mutation: {
@@ -175,7 +199,6 @@ const resolvers = {
      * @param {Enumerator!} args.type - Financial being type (see ./db/datamodel)
      * @param {Enumerator!} args.kind - Financial being kind (see ./db/datamodel)
      * @param {String!} args.name - Name of the financial being we want to create
-     * @param {String!} args.slug - Slug of the financial being we want to create
      * @param {String} args.avatar - Image URL used for avatar of financial being
      * @param {String!} args.teamId - ID of owning team (financial being creator)
      * @param {Object!} args.status - Status of the FBeing (defaults to inactive)
@@ -272,7 +295,6 @@ const resolvers = {
      * @param {Enumerator!} args.type - Financial being type (see ./db/datamodel)
      * @param {Enumerator!} args.kind - Financial being kind (see ./db/datamodel)
      * @param {String!} args.name - Name of the financial being we want to create
-     * @param {String!} args.slug - Slug of the financial being we want to create
      * @param {String} args.avatar - Image URL used for avatar of financial being
      * @param {String!} args.teamId - ID of owning team (financial being creator)
      * @param {Object!} args.status - Status of the FBeing (defaults to inactive)
@@ -542,7 +564,7 @@ const resolvers = {
         
         return await ctx.db.mutation.deleteManyAdmins({
           where: {adminId: args.adminId, financialBeingId: args.id}
-          }, gql`{count}`);
+        }, gql`{count}`);
         
       } catch (e) {
         

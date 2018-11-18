@@ -8,6 +8,7 @@ directive @isOwnerOrHasRole(type: String, roles: [String]) on QUERY | MUTATION
 type Query {
     financialBeings: [FinancialBeing]
     financialBeingsByName(name: String!): [FinancialBeing]
+    financialBeingsByPartialName(name: String!): [FinancialBeing]
     financialBeingsByID(id: ID!): [FinancialBeing]
     financialBeingsByTeamID(teamId: ID!): [FinancialBeing]
     financialBeingsByType(type: FBType!): [FinancialBeing]
@@ -19,7 +20,6 @@ type Mutation {
         type: FBType!,
         kind: FBKind!,
         name: String!,
-        slug: String!,
         avatar: String,
         teamId: String!,
         status: Status,
@@ -32,7 +32,6 @@ type Mutation {
         type: FBType,
         kind: FBKind,
         name: String,
-        slug: String,
         avatar: String,
         status: Status,
         reason: String,

@@ -11,13 +11,41 @@ Go to: <http://localhost:4001/graphql>
 
 You can run the following query in GraphQL
 ```
-query {
-  author(id: 1) {
+query FB {
+  financialBeings {
     id
-    firstName
-    lastName
+    type
+    kind
+    name
+    slug
+    avatar
+    creator
+    status {
+      status
+      reason
+    }
+    updatedOn
+    createdOn
+    team
+    admins {
+      adminId
+    }
   }
 }
+
+mutation CreateFB {
+  createFinancialBeing(
+    type: BOT,
+    kind: TRADER,
+    name: "test2",
+    teamId: "cjnlqituh006u0871x63l92sf",
+    status: ACTIVE,
+    reason: "some-reason",
+  ) {
+    id
+  }
+}
+
 ```
 ...and if you get this response you should be up and running
 
