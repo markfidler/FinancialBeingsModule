@@ -31,7 +31,7 @@ async function checkOwnership(owner, financialBeingId, ctx) {
     // const team = await getTeamById(financialBeing[0].team);
     let team = await getAllTeams();
     
-    team = _.filter(team.teams.edges, e => {
+    team = _.filter(team.teams_Teams.edges, e => {
       return e.node.id === financialBeing[0].team;
     });
     
@@ -87,7 +87,7 @@ async function checkTeamOwnership(messageSender, teamId) {
     // const team = await getTeamById(financialBeing[0].team);
     let team = await getAllTeams();
     
-    team = _.filter(team.teams.edges, e => {
+    team = _.filter(team.teams_Teams.edges, e => {
       return e.node.id === teamId;
     });
     
@@ -117,7 +117,7 @@ async function checkTeamMembership(memberToCheck, teamId) {
     // const team = await getTeamById(teamId);
     let team = await getAllTeams();
     
-    team = _.filter(team.teams.edges, e => {
+    team = _.filter(team.teams_Teams.edges, e => {
       return e.node.id === teamId;
     });
     
