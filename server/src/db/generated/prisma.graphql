@@ -59,13 +59,13 @@ input AdminSubscriptionWhereInput {
   NOT: [AdminSubscriptionWhereInput!]
 }
 
-input AdminUpdateInput {
-  adminId: String
-  financialBeingId: String
-}
-
 input AdminUpdateManyInput {
   create: [AdminCreateInput!]
+}
+
+input AdminUpdateManyMutationInput {
+  adminId: String
+  financialBeingId: String
 }
 
 input AdminWhereInput {
@@ -197,7 +197,7 @@ input FBStatusUpdateDataInput {
   createdOn: Int
 }
 
-input FBStatusUpdateInput {
+input FBStatusUpdateManyMutationInput {
   status: Status
   reason: String
   createdOn: Int
@@ -263,7 +263,7 @@ type FinancialBeing {
   status: FBStatus!
   updatedOn: Int!
   createdOn: Int!
-  parent: String
+  parent: FinancialBeing
   creator: String!
   admins(where: AdminWhereInput, orderBy: AdminOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Admin!]
 }
@@ -284,9 +284,14 @@ input FinancialBeingCreateInput {
   status: FBStatusCreateOneInput!
   updatedOn: Int!
   createdOn: Int!
-  parent: String
+  parent: FinancialBeingCreateOneInput
   creator: String!
   admins: AdminCreateManyInput
+}
+
+input FinancialBeingCreateOneInput {
+  create: FinancialBeingCreateInput
+  connect: FinancialBeingWhereUniqueInput
 }
 
 type FinancialBeingEdge {
@@ -313,8 +318,6 @@ enum FinancialBeingOrderByInput {
   updatedOn_DESC
   createdOn_ASC
   createdOn_DESC
-  parent_ASC
-  parent_DESC
   creator_ASC
   creator_DESC
   createdAt_ASC
@@ -333,7 +336,6 @@ type FinancialBeingPreviousValues {
   team: String!
   updatedOn: Int!
   createdOn: Int!
-  parent: String
   creator: String!
 }
 
@@ -355,6 +357,21 @@ input FinancialBeingSubscriptionWhereInput {
   NOT: [FinancialBeingSubscriptionWhereInput!]
 }
 
+input FinancialBeingUpdateDataInput {
+  type: FBType
+  kind: FBKind
+  name: String
+  slug: String
+  avatar: String
+  team: String
+  status: FBStatusUpdateOneRequiredInput
+  updatedOn: Int
+  createdOn: Int
+  parent: FinancialBeingUpdateOneInput
+  creator: String
+  admins: AdminUpdateManyInput
+}
+
 input FinancialBeingUpdateInput {
   type: FBType
   kind: FBKind
@@ -365,9 +382,35 @@ input FinancialBeingUpdateInput {
   status: FBStatusUpdateOneRequiredInput
   updatedOn: Int
   createdOn: Int
-  parent: String
+  parent: FinancialBeingUpdateOneInput
   creator: String
   admins: AdminUpdateManyInput
+}
+
+input FinancialBeingUpdateManyMutationInput {
+  type: FBType
+  kind: FBKind
+  name: String
+  slug: String
+  avatar: String
+  team: String
+  updatedOn: Int
+  createdOn: Int
+  creator: String
+}
+
+input FinancialBeingUpdateOneInput {
+  create: FinancialBeingCreateInput
+  update: FinancialBeingUpdateDataInput
+  upsert: FinancialBeingUpsertNestedInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: FinancialBeingWhereUniqueInput
+}
+
+input FinancialBeingUpsertNestedInput {
+  update: FinancialBeingUpdateDataInput!
+  create: FinancialBeingCreateInput!
 }
 
 input FinancialBeingWhereInput {
@@ -466,20 +509,7 @@ input FinancialBeingWhereInput {
   createdOn_lte: Int
   createdOn_gt: Int
   createdOn_gte: Int
-  parent: String
-  parent_not: String
-  parent_in: [String!]
-  parent_not_in: [String!]
-  parent_lt: String
-  parent_lte: String
-  parent_gt: String
-  parent_gte: String
-  parent_contains: String
-  parent_not_contains: String
-  parent_starts_with: String
-  parent_not_starts_with: String
-  parent_ends_with: String
-  parent_not_ends_with: String
+  parent: FinancialBeingWhereInput
   creator: String
   creator_not: String
   creator_in: [String!]
@@ -512,14 +542,14 @@ scalar Long
 
 type Mutation {
   createAdmin(data: AdminCreateInput!): Admin!
-  updateManyAdmins(data: AdminUpdateInput!, where: AdminWhereInput): BatchPayload!
+  updateManyAdmins(data: AdminUpdateManyMutationInput!, where: AdminWhereInput): BatchPayload!
   deleteManyAdmins(where: AdminWhereInput): BatchPayload!
   createFBStatus(data: FBStatusCreateInput!): FBStatus!
-  updateManyFBStatuses(data: FBStatusUpdateInput!, where: FBStatusWhereInput): BatchPayload!
+  updateManyFBStatuses(data: FBStatusUpdateManyMutationInput!, where: FBStatusWhereInput): BatchPayload!
   deleteManyFBStatuses(where: FBStatusWhereInput): BatchPayload!
   createFinancialBeing(data: FinancialBeingCreateInput!): FinancialBeing!
   updateFinancialBeing(data: FinancialBeingUpdateInput!, where: FinancialBeingWhereUniqueInput!): FinancialBeing
-  updateManyFinancialBeings(data: FinancialBeingUpdateInput!, where: FinancialBeingWhereInput): BatchPayload!
+  updateManyFinancialBeings(data: FinancialBeingUpdateManyMutationInput!, where: FinancialBeingWhereInput): BatchPayload!
   upsertFinancialBeing(where: FinancialBeingWhereUniqueInput!, create: FinancialBeingCreateInput!, update: FinancialBeingUpdateInput!): FinancialBeing!
   deleteFinancialBeing(where: FinancialBeingWhereUniqueInput!): FinancialBeing
   deleteManyFinancialBeings(where: FinancialBeingWhereInput): BatchPayload!
