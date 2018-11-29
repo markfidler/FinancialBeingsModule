@@ -18,7 +18,7 @@ const {makeExecutableSchema} = require('graphql-tools');
 const slugify = require('slugify');
 
 // Internal modules
-const {logger} = require('./utils');
+const {logger, errors, HttpError} = require('./utils');
 const {
   checkTeamOwnership,
   checkTeamMembership,
@@ -56,11 +56,16 @@ const resolvers = {
       } catch (e) {
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          
-          throw new GraphQLError('Something went wrong while getting Financial Beings');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while getting Financial Beings',
+            errorCode: errors.internal
+          });
         }
-        
-        throw e;
+  
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     /**
@@ -89,11 +94,16 @@ const resolvers = {
       } catch (e) {
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          
-          throw new GraphQLError('Something went wrong while getting Financial Beings');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while getting Financial Beings',
+            errorCode: errors.internal
+          });
         }
-        
-        throw e;
+  
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     /**
@@ -122,11 +132,16 @@ const resolvers = {
       } catch (e) {
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          
-          throw new GraphQLError('Something went wrong while getting Financial Beings');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while getting Financial Beings',
+            errorCode: errors.internal
+          });
         }
-        
-        throw e;
+  
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     async financialBeingsByTeamID(parent, {team}, ctx, info) {
@@ -145,11 +160,16 @@ const resolvers = {
       } catch (e) {
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          
-          throw new GraphQLError('Something went wrong while getting Financial Beings');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while getting Financial Beings',
+            errorCode: errors.internal
+          });
         }
-        
-        throw e;
+  
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     /**
@@ -178,11 +198,16 @@ const resolvers = {
       } catch (e) {
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          
-          throw new GraphQLError('Something went wrong while getting Financial Beings');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while getting Financial Beings',
+            errorCode: errors.internal
+          });
         }
-        
-        throw e;
+  
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     /**
@@ -211,11 +236,16 @@ const resolvers = {
       } catch (e) {
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          
-          throw new GraphQLError('Something went wrong while getting Financial Beings');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while getting Financial Beings',
+            errorCode: errors.internal
+          });
         }
-        
-        throw e;
+  
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     /**
@@ -244,11 +274,16 @@ const resolvers = {
       } catch (e) {
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          
-          throw new GraphQLError('Something went wrong while getting Financial Beings');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while getting Financial Beings',
+            errorCode: errors.internal
+          });
         }
-        
-        throw e;
+  
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     }
   },
@@ -289,7 +324,7 @@ const resolvers = {
         const messageSender = ctx.__userId;
         
         if (!messageSender) {
-          throw new Error('Unauthorized');
+          throw new HttpError('Unauthorized creation attempt', errors.unauthorizedCreationAttempt, 403);
         }
         
         // That means we need to verify the JWT, since we can't just add FB
@@ -324,7 +359,7 @@ const resolvers = {
           const team = await checkTeamMembership(messageSender, args.teamId);
           
           if (!team) {
-            throw new GraphQLError('Could not add non-existing team ID');
+            throw new HttpError('Could not add non-existing team ID', errors.teamIdNotFind, 404);
           }
           
           data.team = args.teamId;
@@ -336,8 +371,7 @@ const resolvers = {
           }, ctx, info);
           
           if (parentFinancialBeing.length < 1) {
-            logger.log({level: 'warn', message: 'Invalid Financial Being parent'});
-            throw new GraphQLError('Invalid Financial Being parent');
+            throw new HttpError('Invalid Financial Being parent', errors.invalidFBParent, 400);
           }
           
           data.parent = parentFinancialBeing.id;
@@ -351,10 +385,16 @@ const resolvers = {
       } catch (e) {
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while creating financial being!');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while creating financial being!',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: 'PlaceholderMessage',
+          errorCode: errors[e.statusText]
+        });
       }
     },
     
@@ -400,7 +440,7 @@ const resolvers = {
         await checkFinancialBeingOwnership(messageSender, args.id, ctx);
         
         if (args.slug && !args.name) {
-          throw new GraphQLError('Cannot change slug without changing name');
+          throw new HttpError('Cannot change slug without changing name', errors.partialSlugChangeAttempt, 400);
         }
         
         let data = {
@@ -430,8 +470,7 @@ const resolvers = {
           }, ctx, info);
           
           if (parentFinancialBeing.length < 1) {
-            logger.log({level: 'warn', message: 'Invalid Financial Being parent'});
-            throw new GraphQLError('Invalid Financial Being parent');
+            throw new HttpError('Invalid Financial Being parent', errors.invalidFBParent, 404);
           }
           
           data.parent = parentFinancialBeing.id;
@@ -446,10 +485,16 @@ const resolvers = {
       } catch (e) {
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while updating financial being!');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while updating financial being!',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: 'PlaceholderMessage',
+          errorCode: errors[e.statusText]
+        });
       }
     },
     
@@ -488,7 +533,7 @@ const resolvers = {
         const isTeamOwner = await checkTeamOwnership(messageSender, args.teamId, ctx);
         
         if (!isTeamOwner) {
-          throw new GraphQLError('Unauthorized');
+          throw new HttpError('Unauthorized', errors.unauthorizedCreationAttempt, 403);
         }
         
         return await ctx.db.mutation.updateFinancialBeing({
@@ -500,10 +545,16 @@ const resolvers = {
         
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while creating financial being!');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while creating financial being!',
+            errorCode: errors.internal
+          });
         }
-        
-        throw e;
+  
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     
@@ -544,13 +595,13 @@ const resolvers = {
         const isTeamMember = await checkTeamMembership(messageSender, args.teamId, ctx);
         
         if (!isTeamMember) {
-          throw new GraphQLError('Caller is not a team member');
+          throw new HttpError('Caller is not a team member', errors.callerNotTeamMember, 403);
         }
         
         const isBeingOwner = await checkFinancialBeingOwnership(messageSender, args.id, ctx);
         
         if (!isBeingOwner) {
-          throw new GraphQLError('Caller is not a Financial Being owner');
+          throw new HttpError('Caller is not a Financial Being owner', errors.callerNotOwner, 403);
         }
         
         return await ctx.db.mutation.updateFinancialBeing({
@@ -562,10 +613,16 @@ const resolvers = {
         
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while creating financial being!');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while creating financial being!',
+            errorCode: errors.internal
+          });
         }
-        
-        throw e;
+  
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
       
     },
@@ -605,7 +662,8 @@ const resolvers = {
         const financialBeing = await checkFinancialBeingOwnership(messageSender, args.id, ctx);
         
         if (!financialBeing) {
-          throw new GraphQLError('Sender is not a provided financial being creator');
+          throw new HttpError('Sender is not a provided financial being creator', errors.senderNotProvidedFBCreator,
+            403);
         }
         
         const adminAlreadyExists = _.filter(financialBeing.admins, e => {
@@ -613,13 +671,13 @@ const resolvers = {
         });
         
         if (adminAlreadyExists.length > 0) {
-          throw new GraphQLError('Admin already exists');
+          throw new HttpError('Admin already exists', errors.adminAlreadyExists, 400);
         }
         
         const isNewAdminMember = await checkTeamMembership(args.adminId, financialBeing.team);
         
         if (!isNewAdminMember) {
-          throw new GraphQLError('Could not add a non-team member to admins list');
+          throw new HttpError('Could not add a non-team member to admins list', errors.nonTeamMemberAdminAttempt, 400);
         }
         
         return await ctx.db.mutation.updateFinancialBeing({
@@ -637,10 +695,16 @@ const resolvers = {
       } catch (e) {
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while adding financial being admin!');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while adding financial being admin!',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     
@@ -682,7 +746,7 @@ const resolvers = {
         });
         
         if (adminExists.length < 1) {
-          throw new GraphQLError('Admin doesn\'t exist!');
+          throw new HttpError('Admin does not exist', errors.adminDoesNotExist, 404);
         }
         
         return await ctx.db.mutation.deleteManyAdmins({
@@ -693,10 +757,16 @@ const resolvers = {
         
         if (e.__proto__.name !== 'GraphQLError') {
           logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while removing financial being admin!');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while removing financial being admin!',
+            errorCode: errors.internal
+          });
         }
-        
-        throw e;
+  
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     }
   }
