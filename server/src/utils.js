@@ -33,7 +33,7 @@ const logger = winston.createLogger({
 class HttpError extends Error {
   constructor(message, errorCode, statusCode) {
     super(message);
-    this.constructor.name = 'HttpError';
+    this.name = 'HttpError';
     this.errorCode = errorCode;
     this.statusCode = statusCode;
     

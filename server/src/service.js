@@ -50,10 +50,10 @@ async function checkOwnership(owner, financialBeingId, ctx) {
     return isSenderOwner[0].node;
     
   } catch (e) {
-    if (e.__proto__.name !== 'GraphQLError') {
+    if (e.name !== 'HttpError') {
       logger.log({level: 'error', message: e.message});
       
-      throw new GraphQLError('Something went wrong while getting Financial Beings');
+      throw new GraphQLError('Something went wrong');
     }
     
     throw e;
@@ -76,7 +76,7 @@ async function checkFinancialBeingOwnership(messageSender, financialBeingId, ctx
     
   } catch (e) {
     logger.log({level: 'error', message: e.message});
-    throw new GraphQLError('Something went wrong while getting Financial Beings');
+    throw new GraphQLError('Something went wrong');
   }
 }
 
@@ -108,7 +108,7 @@ async function checkTeamOwnership(messageSender, teamId) {
     return team[0].node;
   } catch (e) {
     logger.log({level: 'error', message: e.message});
-    throw new GraphQLError('Something went wrong while getting Financial Beings');
+    throw new GraphQLError('Something went wrong');
   }
 }
 

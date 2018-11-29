@@ -11,7 +11,6 @@ require('dotenv').config();
 // External modules
 const _ = require('lodash');
 const gql = require('graphql-tag');
-const {GraphQLError} = require('graphql');
 const {importSchema} = require('graphql-import');
 const {makeExecutableSchema} = require('graphql-tools');
 
@@ -54,14 +53,14 @@ const resolvers = {
         
         return await ctx.db.query.financialBeings({}, BEINGS_FRAGMENT);
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
           return ctx.res.status(500).send({
-            message: 'Something went wrong while getting Financial Beings',
+            message: 'Something went wrong',
             errorCode: errors.internal
           });
         }
-  
+        
         return ctx.res.status(e.statusCode).send({
           message: e.message,
           errorCode: e.errorCode
@@ -92,14 +91,14 @@ const resolvers = {
         
         return await ctx.db.query.financialBeings({where: {name: name}}, BEINGS_FRAGMENT);
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
           return ctx.res.status(500).send({
-            message: 'Something went wrong while getting Financial Beings',
+            message: 'Something went wrong',
             errorCode: errors.internal
           });
         }
-  
+        
         return ctx.res.status(e.statusCode).send({
           message: e.message,
           errorCode: e.errorCode
@@ -130,14 +129,14 @@ const resolvers = {
         
         return await ctx.db.query.financialBeings({where: {id: id}}, BEINGS_FRAGMENT);
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
           return ctx.res.status(500).send({
-            message: 'Something went wrong while getting Financial Beings',
+            message: 'Something went wrong',
             errorCode: errors.internal
           });
         }
-  
+        
         return ctx.res.status(e.statusCode).send({
           message: e.message,
           errorCode: e.errorCode
@@ -158,14 +157,14 @@ const resolvers = {
         
         return await ctx.db.query.financialBeings({where: {team: team}}, BEINGS_FRAGMENT);
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
           return ctx.res.status(500).send({
-            message: 'Something went wrong while getting Financial Beings',
+            message: 'Something went wrong',
             errorCode: errors.internal
           });
         }
-  
+        
         return ctx.res.status(e.statusCode).send({
           message: e.message,
           errorCode: e.errorCode
@@ -196,14 +195,14 @@ const resolvers = {
         
         return await ctx.db.query.financialBeings({where: {type: type}}, BEINGS_FRAGMENT);
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
           return ctx.res.status(500).send({
-            message: 'Something went wrong while getting Financial Beings',
+            message: 'Something went wrong',
             errorCode: errors.internal
           });
         }
-  
+        
         return ctx.res.status(e.statusCode).send({
           message: e.message,
           errorCode: e.errorCode
@@ -234,14 +233,14 @@ const resolvers = {
         
         return await ctx.db.query.financialBeings({where: {kind: kind}}, BEINGS_FRAGMENT);
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
           return ctx.res.status(500).send({
-            message: 'Something went wrong while getting Financial Beings',
+            message: 'Something went wrong',
             errorCode: errors.internal
           });
         }
-  
+        
         return ctx.res.status(e.statusCode).send({
           message: e.message,
           errorCode: e.errorCode
@@ -272,14 +271,14 @@ const resolvers = {
         
         return await ctx.db.query.financialBeings({where: {name_contains: name}}, BEINGS_FRAGMENT);
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
           return ctx.res.status(500).send({
-            message: 'Something went wrong while getting Financial Beings',
+            message: 'Something went wrong',
             errorCode: errors.internal
           });
         }
-  
+        
         return ctx.res.status(e.statusCode).send({
           message: e.message,
           errorCode: e.errorCode
@@ -327,10 +326,6 @@ const resolvers = {
           throw new HttpError('Unauthorized creation attempt', errors.unauthorizedCreationAttempt, 403);
         }
         
-        // That means we need to verify the JWT, since we can't just add FB
-        // without properly checking the user first (and its access rights)
-        // For now, we'll just use the data from which we received from JWT
-        
         const currentTime = Math.floor(Date.now() / 1000);
         
         const data = {
@@ -353,9 +348,6 @@ const resolvers = {
         
         
         if (args.teamId) {
-          // TODO@cordo-van-saviour: change this when API starts working again
-          // let teams = await getTeamByID(args.teamId, ctx.req.cookies['Authorization']);
-          
           const team = await checkTeamMembership(messageSender, args.teamId);
           
           if (!team) {
@@ -383,8 +375,7 @@ const resolvers = {
         }, BEINGS_FRAGMENT);
         
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
-          logger.log({level: 'error', message: e.message});
+        if (e.name !== 'HttpError') {
           return ctx.res.status(500).send({
             message: 'Something went wrong while creating financial being!',
             errorCode: errors.internal
@@ -392,8 +383,8 @@ const resolvers = {
         }
         
         return ctx.res.status(e.statusCode).send({
-          message: 'PlaceholderMessage',
-          errorCode: errors[e.statusText]
+          message: e.message,
+          errorCode: e.errorCode
         });
       }
     },
@@ -483,7 +474,7 @@ const resolvers = {
         }, BEINGS_FRAGMENT);
         
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
           return ctx.res.status(500).send({
             message: 'Something went wrong while updating financial being!',
@@ -492,8 +483,8 @@ const resolvers = {
         }
         
         return ctx.res.status(e.statusCode).send({
-          message: 'PlaceholderMessage',
-          errorCode: errors[e.statusText]
+          message: e.message,
+          errorCode: e.errorCode
         });
       }
     },
@@ -543,14 +534,14 @@ const resolvers = {
         
       } catch (e) {
         
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
           return ctx.res.status(500).send({
-            message: 'Something went wrong while creating financial being!',
+            message: 'Something went wrong while removing financial being!',
             errorCode: errors.internal
           });
         }
-  
+        
         return ctx.res.status(e.statusCode).send({
           message: e.message,
           errorCode: e.errorCode
@@ -611,14 +602,14 @@ const resolvers = {
         
       } catch (e) {
         
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
           return ctx.res.status(500).send({
             message: 'Something went wrong while creating financial being!',
             errorCode: errors.internal
           });
         }
-  
+        
         return ctx.res.status(e.statusCode).send({
           message: e.message,
           errorCode: e.errorCode
@@ -693,7 +684,7 @@ const resolvers = {
         }, BEINGS_FRAGMENT);
         
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
           return ctx.res.status(500).send({
             message: 'Something went wrong while adding financial being admin!',
@@ -755,14 +746,14 @@ const resolvers = {
         
       } catch (e) {
         
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
           return ctx.res.status(500).send({
             message: 'Something went wrong while removing financial being admin!',
             errorCode: errors.internal
           });
         }
-  
+        
         return ctx.res.status(e.statusCode).send({
           message: e.message,
           errorCode: e.errorCode
