@@ -42,6 +42,15 @@ const resolvers = {
      */
     async financialBeings(parent, args, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Query',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
         
         return await ctx.db.query.financialBeings({}, BEINGS_FRAGMENT);
       } catch (e) {
@@ -66,6 +75,15 @@ const resolvers = {
      */
     async financialBeingsByName(parent, {name}, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Query',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
         
         return await ctx.db.query.financialBeings({where: {name: name}}, BEINGS_FRAGMENT);
       } catch (e) {
@@ -90,6 +108,15 @@ const resolvers = {
      */
     async financialBeingsByID(parent, {id}, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Query',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
         
         return await ctx.db.query.financialBeings({where: {id: id}}, BEINGS_FRAGMENT);
       } catch (e) {
@@ -104,6 +131,15 @@ const resolvers = {
     },
     async financialBeingsByTeamID(parent, {team}, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Query',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
         
         return await ctx.db.query.financialBeings({where: {team: team}}, BEINGS_FRAGMENT);
       } catch (e) {
@@ -128,6 +164,15 @@ const resolvers = {
      */
     async financialBeingsByType(parent, {type}, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Query',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
         
         return await ctx.db.query.financialBeings({where: {type: type}}, BEINGS_FRAGMENT);
       } catch (e) {
@@ -152,6 +197,15 @@ const resolvers = {
      */
     async financialBeingsByKind(parent, {kind}, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Query',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
         
         return await ctx.db.query.financialBeings({where: {kind: kind}}, BEINGS_FRAGMENT);
       } catch (e) {
@@ -176,6 +230,15 @@ const resolvers = {
      */
     async financialBeingsByPartialName(parent, {name}, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Query',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
         
         return await ctx.db.query.financialBeings({where: {name_contains: name}}, BEINGS_FRAGMENT);
       } catch (e) {
@@ -213,6 +276,16 @@ const resolvers = {
      */
     async createFinancialBeing(parent, args, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Mutation',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
+        
         const messageSender = ctx.__userId;
         
         if (!messageSender) {
@@ -309,6 +382,16 @@ const resolvers = {
      */
     async updateFinancialBeing(parent, args, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Mutation',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
+        
         
         const messageSender = ctx.__userId;
         // let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
@@ -389,6 +472,16 @@ const resolvers = {
     async removeFinancialBeingFromTeam(parent, args, ctx, info) {
       
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Mutation',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
+        
         // Only financial being owner can remove it from the team
         const messageSender = ctx.__userId;
         
@@ -433,6 +526,16 @@ const resolvers = {
     async addFinancialBeingToTeam(parent, args, ctx, info) {
       
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Mutation',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
+        
         // Only financial being owner can remove it from the team
         const messageSender = ctx.__userId;
         
@@ -486,6 +589,16 @@ const resolvers = {
     async addFinancialBeingAdmin(parent, args, ctx, info) {
       
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Mutation',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
+        
         // Only financial being owner can add admin to the financial being
         const messageSender = ctx.__userId;
         
@@ -549,6 +662,16 @@ const resolvers = {
      */
     async removeFinancialBeingAdmin(parent, args, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Mutation',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
+        
         // Only financial being owner can remove admin from financial being
         const messageSender = ctx.__userId;
         
