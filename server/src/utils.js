@@ -25,6 +25,45 @@ const logger = winston.createLogger({
   ]
 });
 
+/**
+ * Extends the Error object with additional features.
+ * @param {String} message -- Custom message for this error.
+ * @param {Number} errorCode -- Custom error code for this error
+ */
+class HttpError extends Error {
+  constructor(message, errorCode, statusCode) {
+    super(message);
+    this.name = 'HttpError';
+    this.errorCode = errorCode;
+    this.statusCode = statusCode;
+    
+    logger.log({
+      level: 'error',
+      message: message,
+      errorCode: errorCode,
+      statusCode: statusCode
+    });
+  }
+}
+
+const errors = {
+  // Queries - 1xxxx
+  // Mutations - 2xxxx
+  unauthorizedCreationAttempt: 20101,
+  invalidFBParent: 20102,
+  teamIdNotFind: 20103,
+  partialSlugChangeAttempt: 20204,
+  callerNotTeamMember: 20401,
+  callerNotOwner: 20402,
+  senderNotProvidedFBCreator: 20501,
+  adminAlreadyExists: 20502,
+  nonTeamMemberAdminAttempt: 20503,
+  adminDoesNotExist: 20601,
+  internal: 500
+};
+
 module.exports = {
-  logger: logger
+  logger: logger,
+  errors: errors,
+  HttpError: HttpError
 };

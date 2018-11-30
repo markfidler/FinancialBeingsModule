@@ -11,14 +11,13 @@ require('dotenv').config();
 // External modules
 const _ = require('lodash');
 const gql = require('graphql-tag');
-const {GraphQLError} = require('graphql');
 const {importSchema} = require('graphql-import');
 const {makeExecutableSchema} = require('graphql-tools');
 
 const slugify = require('slugify');
 
 // Internal modules
-const {logger} = require('./utils');
+const {logger, errors, HttpError} = require('./utils');
 const {
   checkTeamOwnership,
   checkTeamMembership,
@@ -42,16 +41,30 @@ const resolvers = {
      */
     async financialBeings(parent, args, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Query',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
         
         return await ctx.db.query.financialBeings({}, BEINGS_FRAGMENT);
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
-          
-          throw new GraphQLError('Something went wrong while getting Financial Beings');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     /**
@@ -66,16 +79,30 @@ const resolvers = {
      */
     async financialBeingsByName(parent, {name}, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Query',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
         
         return await ctx.db.query.financialBeings({where: {name: name}}, BEINGS_FRAGMENT);
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
-          
-          throw new GraphQLError('Something went wrong while getting Financial Beings');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     /**
@@ -90,30 +117,58 @@ const resolvers = {
      */
     async financialBeingsByID(parent, {id}, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Query',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
         
         return await ctx.db.query.financialBeings({where: {id: id}}, BEINGS_FRAGMENT);
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
-          
-          throw new GraphQLError('Something went wrong while getting Financial Beings');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     async financialBeingsByTeamID(parent, {team}, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Query',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
         
         return await ctx.db.query.financialBeings({where: {team: team}}, BEINGS_FRAGMENT);
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
-          
-          throw new GraphQLError('Something went wrong while getting Financial Beings');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     /**
@@ -128,16 +183,30 @@ const resolvers = {
      */
     async financialBeingsByType(parent, {type}, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Query',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
         
         return await ctx.db.query.financialBeings({where: {type: type}}, BEINGS_FRAGMENT);
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
-          
-          throw new GraphQLError('Something went wrong while getting Financial Beings');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     /**
@@ -152,16 +221,30 @@ const resolvers = {
      */
     async financialBeingsByKind(parent, {kind}, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Query',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
         
         return await ctx.db.query.financialBeings({where: {kind: kind}}, BEINGS_FRAGMENT);
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
-          
-          throw new GraphQLError('Something went wrong while getting Financial Beings');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     /**
@@ -176,16 +259,30 @@ const resolvers = {
      */
     async financialBeingsByPartialName(parent, {name}, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Query',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
         
         return await ctx.db.query.financialBeings({where: {name_contains: name}}, BEINGS_FRAGMENT);
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
-          
-          throw new GraphQLError('Something went wrong while getting Financial Beings');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     }
   },
@@ -213,15 +310,21 @@ const resolvers = {
      */
     async createFinancialBeing(parent, args, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Mutation',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
+        
         const messageSender = ctx.__userId;
         
         if (!messageSender) {
-          throw new Error('Unauthorized');
+          throw new HttpError('Unauthorized creation attempt', errors.unauthorizedCreationAttempt, 403);
         }
-        
-        // That means we need to verify the JWT, since we can't just add FB
-        // without properly checking the user first (and its access rights)
-        // For now, we'll just use the data from which we received from JWT
         
         const currentTime = Math.floor(Date.now() / 1000);
         
@@ -245,13 +348,10 @@ const resolvers = {
         
         
         if (args.teamId) {
-          // TODO@cordo-van-saviour: change this when API starts working again
-          // let teams = await getTeamByID(args.teamId, ctx.req.cookies['Authorization']);
-          
           const team = await checkTeamMembership(messageSender, args.teamId);
           
           if (!team) {
-            throw new GraphQLError('Could not add non-existing team ID');
+            throw new HttpError('Could not add non-existing team ID', errors.teamIdNotFind, 404);
           }
           
           data.team = args.teamId;
@@ -263,8 +363,7 @@ const resolvers = {
           }, ctx, info);
           
           if (parentFinancialBeing.length < 1) {
-            logger.log({level: 'warn', message: 'Invalid Financial Being parent'});
-            throw new GraphQLError('Invalid Financial Being parent');
+            throw new HttpError('Invalid Financial Being parent', errors.invalidFBParent, 400);
           }
           
           data.parent = parentFinancialBeing.id;
@@ -276,12 +375,17 @@ const resolvers = {
         }, BEINGS_FRAGMENT);
         
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
-          logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while creating financial being!');
+        if (e.name !== 'HttpError') {
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while creating financial being!',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     
@@ -309,6 +413,16 @@ const resolvers = {
      */
     async updateFinancialBeing(parent, args, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Mutation',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
+        
         
         const messageSender = ctx.__userId;
         // let messageSender = await jwt.decode(ctx.req.cookies['Authorization'].split(' ')[1]);
@@ -317,7 +431,7 @@ const resolvers = {
         await checkFinancialBeingOwnership(messageSender, args.id, ctx);
         
         if (args.slug && !args.name) {
-          throw new GraphQLError('Cannot change slug without changing name');
+          throw new HttpError('Cannot change slug without changing name', errors.partialSlugChangeAttempt, 400);
         }
         
         let data = {
@@ -347,8 +461,7 @@ const resolvers = {
           }, ctx, info);
           
           if (parentFinancialBeing.length < 1) {
-            logger.log({level: 'warn', message: 'Invalid Financial Being parent'});
-            throw new GraphQLError('Invalid Financial Being parent');
+            throw new HttpError('Invalid Financial Being parent', errors.invalidFBParent, 404);
           }
           
           data.parent = parentFinancialBeing.id;
@@ -361,12 +474,18 @@ const resolvers = {
         }, BEINGS_FRAGMENT);
         
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while updating financial being!');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while updating financial being!',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     
@@ -389,13 +508,23 @@ const resolvers = {
     async removeFinancialBeingFromTeam(parent, args, ctx, info) {
       
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Mutation',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
+        
         // Only financial being owner can remove it from the team
         const messageSender = ctx.__userId;
         
         const isTeamOwner = await checkTeamOwnership(messageSender, args.teamId, ctx);
         
         if (!isTeamOwner) {
-          throw new GraphQLError('Unauthorized');
+          throw new HttpError('Unauthorized', errors.unauthorizedCreationAttempt, 403);
         }
         
         return await ctx.db.mutation.updateFinancialBeing({
@@ -405,12 +534,18 @@ const resolvers = {
         
       } catch (e) {
         
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while creating financial being!');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while removing financial being!',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     
@@ -433,6 +568,16 @@ const resolvers = {
     async addFinancialBeingToTeam(parent, args, ctx, info) {
       
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Mutation',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
+        
         // Only financial being owner can remove it from the team
         const messageSender = ctx.__userId;
         
@@ -441,13 +586,13 @@ const resolvers = {
         const isTeamMember = await checkTeamMembership(messageSender, args.teamId, ctx);
         
         if (!isTeamMember) {
-          throw new GraphQLError('Caller is not a team member');
+          throw new HttpError('Caller is not a team member', errors.callerNotTeamMember, 403);
         }
         
         const isBeingOwner = await checkFinancialBeingOwnership(messageSender, args.id, ctx);
         
         if (!isBeingOwner) {
-          throw new GraphQLError('Caller is not a Financial Being owner');
+          throw new HttpError('Caller is not a Financial Being owner', errors.callerNotOwner, 403);
         }
         
         return await ctx.db.mutation.updateFinancialBeing({
@@ -457,12 +602,18 @@ const resolvers = {
         
       } catch (e) {
         
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while creating financial being!');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while creating financial being!',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
       
     },
@@ -486,13 +637,24 @@ const resolvers = {
     async addFinancialBeingAdmin(parent, args, ctx, info) {
       
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Mutation',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
+        
         // Only financial being owner can add admin to the financial being
         const messageSender = ctx.__userId;
         
         const financialBeing = await checkFinancialBeingOwnership(messageSender, args.id, ctx);
         
         if (!financialBeing) {
-          throw new GraphQLError('Sender is not a provided financial being creator');
+          throw new HttpError('Sender is not a provided financial being creator', errors.senderNotProvidedFBCreator,
+            403);
         }
         
         const adminAlreadyExists = _.filter(financialBeing.admins, e => {
@@ -500,13 +662,13 @@ const resolvers = {
         });
         
         if (adminAlreadyExists.length > 0) {
-          throw new GraphQLError('Admin already exists');
+          throw new HttpError('Admin already exists', errors.adminAlreadyExists, 400);
         }
         
         const isNewAdminMember = await checkTeamMembership(args.adminId, financialBeing.team);
         
         if (!isNewAdminMember) {
-          throw new GraphQLError('Could not add a non-team member to admins list');
+          throw new HttpError('Could not add a non-team member to admins list', errors.nonTeamMemberAdminAttempt, 400);
         }
         
         return await ctx.db.mutation.updateFinancialBeing({
@@ -522,12 +684,18 @@ const resolvers = {
         }, BEINGS_FRAGMENT);
         
       } catch (e) {
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while adding financial being admin!');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while adding financial being admin!',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     },
     
@@ -549,6 +717,16 @@ const resolvers = {
      */
     async removeFinancialBeingAdmin(parent, args, ctx, info) {
       try {
+        logger.log({
+          level: 'info',
+          message: 'Received request on FinancialBeings module.',
+          type: 'Mutation',
+          resolver: info.fieldName,
+          from: ctx.req.headers.host,
+          userid: ctx.req.headers.userid,
+          timestamp: new Date().toISOString()
+        });
+        
         // Only financial being owner can remove admin from financial being
         const messageSender = ctx.__userId;
         
@@ -559,7 +737,7 @@ const resolvers = {
         });
         
         if (adminExists.length < 1) {
-          throw new GraphQLError('Admin doesn\'t exist!');
+          throw new HttpError('Admin does not exist', errors.adminDoesNotExist, 404);
         }
         
         return await ctx.db.mutation.deleteManyAdmins({
@@ -568,12 +746,18 @@ const resolvers = {
         
       } catch (e) {
         
-        if (e.__proto__.name !== 'GraphQLError') {
+        if (e.name !== 'HttpError') {
           logger.log({level: 'error', message: e.message});
-          throw new GraphQLError('Something went wrong while removing financial being admin!');
+          return ctx.res.status(500).send({
+            message: 'Something went wrong while removing financial being admin!',
+            errorCode: errors.internal
+          });
         }
         
-        throw e;
+        return ctx.res.status(e.statusCode).send({
+          message: e.message,
+          errorCode: e.errorCode
+        });
       }
     }
   }

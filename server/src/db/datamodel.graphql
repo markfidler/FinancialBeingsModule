@@ -35,7 +35,7 @@ type FinancialBeing {
     status: FBStatus!
     updatedOn: Int!
     createdOn: Int!
-    parent: String
+    parent: FinancialBeing
     creator: String!
     admins: [Admin!]!
 }

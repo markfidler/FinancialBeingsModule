@@ -46,12 +46,13 @@ app.use('/graphql', (req, res, next) => {
   }
 });
 
-app.use('/graphql', graphqlHTTP(async req => ({
+app.use('/graphql', graphqlHTTP(async (req, res) => ({
   schema: schema,
   graphiql: true,
   context: {
     db: db,
     req: req,
+    res: res,
     __userId: req.headers.userid ? req.headers.userid : null
   }
 })));

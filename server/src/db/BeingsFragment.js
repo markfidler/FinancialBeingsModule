@@ -15,7 +15,51 @@ const BEINGS_FRAGMENT = gql`{
     updatedOn
     createdOn
     team
-    parent
+    parent {
+        id
+        type
+        kind
+        name
+        slug
+        avatar
+        status {
+            status
+            reason
+            createdOn
+        }
+        updatedOn
+        createdOn
+        team
+        parent {
+            id
+            type
+            kind
+            name
+            slug
+            avatar
+            status {
+                status
+                reason
+                createdOn
+            }
+            updatedOn
+            createdOn
+            team
+            parent {
+                id
+            }
+            creator
+            admins {
+                adminId
+                financialBeingId
+            }
+        }
+        creator
+        admins {
+            adminId
+            financialBeingId
+        }
+    }
     creator
     admins {
         adminId
